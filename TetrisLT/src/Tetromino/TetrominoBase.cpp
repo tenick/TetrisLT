@@ -28,12 +28,12 @@ namespace Tetromino {
 	int TetrominoBase::GetHeight() { return this->tetrominoHeight; }
 	int TetrominoBase::GetCurrentStateIndex() { return this->currentRotationState; }
 	void TetrominoBase::SetCurrentStateIndex(int newStateIndex) { this->currentRotationState = this->adjustStateIndex(newStateIndex); }
-	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetCurrentState() { return this->RotationStates[this->currentRotationState]; }
-	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetRotationStateAt(int index) {
+	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetCurrentState() const { return this->RotationStates[this->currentRotationState]; }
+	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetRotationStateAt(int index) const {
 		int actualIndex = this->adjustStateIndex(index);
 		return this->RotationStates[actualIndex];
 	}
-	int TetrominoBase::adjustStateIndex(int index) {
+	int TetrominoBase::adjustStateIndex(int index) const {
 		int actualIndex = index % this->statesAmt;
 		if (actualIndex < 0) actualIndex += this->statesAmt;
 		return actualIndex;

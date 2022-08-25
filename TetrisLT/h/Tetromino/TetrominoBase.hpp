@@ -24,8 +24,8 @@ namespace Tetromino {
 		int GetHeight();
 		int GetCurrentStateIndex();
 		void SetCurrentStateIndex(int newStateIndex);
-		const std::vector<std::vector<TetrominoEnum>>& GetCurrentState();
-		const std::vector<std::vector<TetrominoEnum>>& GetRotationStateAt(int index);
+		const std::vector<std::vector<TetrominoEnum>>& GetCurrentState() const;
+		const std::vector<std::vector<TetrominoEnum>>& GetRotationStateAt(int index) const;
 		const TetrominoEnum tetrominoEnum;
 	protected:
 		TetrominoBase(std::vector<std::vector<std::vector<TetrominoEnum>>> rotationStates,
@@ -40,7 +40,7 @@ namespace Tetromino {
 		int currentRotationState;
 		const int statesAmt;
 	private:
-		int adjustStateIndex(int index);
+		int adjustStateIndex(int index) const;
 	};
 	
 	TetrominoBase* EnumToTetromino(TetrominoEnum tetrEnum);
