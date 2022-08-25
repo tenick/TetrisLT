@@ -7,7 +7,7 @@ namespace Randomizer {
 	public:
 		BagOf7();
 		TetrominoBase* Next() override;
-		const std::array<const TetrominoBase*, 5>& PeekNext5() override;
+		const std::array<const TetrominoBase*, 5> PeekNext5() override;
 	private:
 		void refillQueue();
 

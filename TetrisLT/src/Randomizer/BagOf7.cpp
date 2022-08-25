@@ -1,8 +1,9 @@
 #include "../../h/Randomizer/BagOf7.hpp"
-
+#include <iostream>
 namespace Randomizer {
 	BagOf7::BagOf7() {
 		this->refillQueue();
+		std::cout << "yo: " << this->tetrominoQueue.size() << "\n";
 	}
 
 	TetrominoBase* BagOf7::Next() {
@@ -15,7 +16,7 @@ namespace Randomizer {
 		return front;
 	}
 
-	const std::array<const TetrominoBase*, 5>& BagOf7::PeekNext5() {
+	const std::array<const TetrominoBase*, 5> BagOf7::PeekNext5() {
 		auto queueCopy = this->tetrominoQueue;
 		std::array<const TetrominoBase*, 5> arr;
 		for (int i = 0; i < 5; i++) {

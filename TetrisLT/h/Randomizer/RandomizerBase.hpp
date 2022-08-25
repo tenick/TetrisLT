@@ -8,7 +8,7 @@ namespace Randomizer {
 	public:
 		RandomizerBase();
 		virtual TetrominoBase* Next() = 0;
-		virtual const std::array<const TetrominoBase*, 5>& PeekNext5() = 0;
+		virtual const std::array<const TetrominoBase*, 5> PeekNext5() = 0;
 		void SetSeed(int seed);
 	protected:
 		int seed = 0;

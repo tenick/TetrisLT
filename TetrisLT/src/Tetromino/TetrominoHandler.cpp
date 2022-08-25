@@ -110,37 +110,58 @@ namespace Tetromino {
 			this->on180Rotate = false;
 
 
-		// move left/right
-		if (currentKeyStates[this->MoveLeft] || currentKeyStates[this->MoveRight])
+		// move left
+		if (currentKeyStates[this->MoveLeft])
 		{
-			if (!this->ARRActivated) {
-				if (!this->onDAS) {
-					if (currentKeyStates[this->MoveLeft])
-						this->Move(M_L);
-					else
-						this->Move(M_R);
-					this->onDAS = true;
-					this->currentDAS = SDL_GetTicks64();
+			if (!this->leftARRActivated) {
+				if (!this->onLeftDAS) {
+					this->Move(M_L);
+					this->onLeftDAS = true;
+					this->currentLeftDAS = SDL_GetTicks64();
 				}
-				else if (this->onDAS && SDL_GetTicks64() - this->currentDAS >= this->DAS) {
-					this->ARRActivated = true;
-					this->currentARR = SDL_GetTicks();
+				else if (this->onLeftDAS && SDL_GetTicks64() - this->currentLeftDAS >= this->DAS) {
+					this->leftARRActivated = true;
+					this->currentLeftARR = SDL_GetTicks();
 				}
 			}
-			else if (this->ARRActivated && SDL_GetTicks64() - this->currentARR >= this->ARR) {
-				if (currentKeyStates[this->MoveLeft])
-					this->Move(M_L);
-				else
-					this->Move(M_R);
-				this->currentARR = SDL_GetTicks();
+			else if (this->leftARRActivated && SDL_GetTicks64() - this->currentLeftARR >= this->ARR) {
+				this->Move(M_L);
+				this->currentLeftARR = SDL_GetTicks();
 			}
 		}
 		else {
-			this->ARRActivated = false;
-			this->onDAS = false;
-			this->currentDAS = 0;
-			this->currentARR = 0;
+			this->leftARRActivated = false;
+			this->onLeftDAS = false;
+			this->currentLeftDAS = 0;
+			this->currentLeftARR = 0;
 		}
+
+		// move right
+		if (currentKeyStates[this->MoveRight])
+		{
+			if (!this->rightARRActivated) {
+				if (!this->onRightDAS) {
+					this->Move(M_R);
+					this->onRightDAS = true;
+					this->currentRightDAS = SDL_GetTicks64();
+				}
+				else if (this->onRightDAS && SDL_GetTicks64() - this->currentRightDAS >= this->DAS) {
+					this->rightARRActivated = true;
+					this->currentRightARR = SDL_GetTicks();
+				}
+			}
+			else if (this->rightARRActivated && SDL_GetTicks64() - this->currentRightARR >= this->ARR) {
+				this->Move(M_R);
+				this->currentRightARR = SDL_GetTicks();
+			}
+		}
+		else {
+			this->rightARRActivated = false;
+			this->onRightDAS = false;
+			this->currentRightDAS = 0;
+			this->currentRightARR = 0;
+		}
+
 
 	}
 
@@ -211,7 +232,7 @@ namespace Tetromino {
 		return this->currentTetromino;
 	}
 
-	const std::array<const TetrominoBase*, 5>& TetrominoHandler::PeekNext5Tetrominos() {
+	const std::array<const TetrominoBase*, 5> TetrominoHandler::PeekNext5Tetrominos() {
 		return this->randomizer->PeekNext5();
 	}
 

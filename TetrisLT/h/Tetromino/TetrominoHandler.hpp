@@ -18,7 +18,7 @@ namespace Tetromino {
 		void Update();
 		TetrominoBase* GetHoldTetromino();
 		TetrominoBase* GetCurrentTetromino();
-		const std::array<const TetrominoBase*, 5>& PeekNext5Tetrominos();
+		const std::array<const TetrominoBase*, 5> PeekNext5Tetrominos();
 		~TetrominoHandler();
 	private:
 		std::vector<std::vector<TetrominoEnum>>& BoardState;
@@ -47,16 +47,24 @@ namespace Tetromino {
 
 		// states
 		bool onHarddrop = false;
-		bool onDAS = false;
-		bool ARRActivated = false;
-		bool SDSActivated = false;
-		int holdLimit = 1;
 
-		int currentDAS = 0;
-		int currentARR = 0;
+		bool SDSActivated = false;
 		int currentSDS = 0;
+
+		int holdLimit = 1;
 		int currentHold = 0;
 
+		bool onLeftDAS = false;
+		bool leftARRActivated = false;
+		int currentLeftDAS = 0;
+		int currentLeftARR = 0;
+
+		bool onRightDAS = false;
+		bool rightARRActivated = false;
+		int currentRightDAS = 0;
+		int currentRightARR = 0;
+
+		
 		bool onCWRotate = false;
 		bool onCCWRotate = false;
 		bool on180Rotate = false;
