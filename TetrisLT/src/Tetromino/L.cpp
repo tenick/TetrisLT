@@ -25,7 +25,9 @@ namespace Tetromino {
 				 {_ , L_, _ }}
 			}
 		} }
-	))
+		),
+		L_
+	)
 	{
 	}
 }

@@ -9,48 +9,165 @@ namespace Tetromino {
 	{
 	}
 
-	bool TetrominoHandler::canMove(const std::vector<std::vector<TetrominoEnum>>& tetrominoState, int newColOffset, int newRowOffset) {
-		for (int c = 0; c < tetrominoState[0].size(); c++) {
-			int boardC = newColOffset + c;
-			for (int r = 0; r < tetrominoState.size(); r++) {
-				int boardR = newRowOffset + r;
+	void TetrominoHandler::Lock() {
+		auto currentTetromino = this->GetCurrentTetromino();
+		auto currentTetrominoState = currentTetromino->GetCurrentState();
+		// add current tetromino to the board state
+		for (int r = 0; r < currentTetromino->GetHeight(); r++) {
+			for (int c = 0; c < currentTetromino->GetWidth(); c++) {
+				int boardR = r + currentTetromino->GetRowOffset();
+				int boardC = c + currentTetromino->GetColumnOffset();
+				if (currentTetrominoState[r][c] != _)
+					this->BoardState[boardR][boardC] = currentTetrominoState[r][c];
+			}
+		}
+	}
 
-				if (boardC < 0 || boardC >= this->BoardWidth || boardR >= this->BoardHeight) { // means piece array is reaching outside of board
-					// check if any piece is outside the board, can't move
-					if (tetrominoState[r][c] != _)
-						return false;
-				}
-				else { // means piece array is inside the board
-					// check if any piece in array is touching any piece in board
-					if (tetrominoState[r][c] != _ && this->BoardState[boardR][boardC] != _)
-						return false;
+	void TetrominoHandler::Update() {
+	// update tetris states (time to get next piece? time to randomize? etc...)
+	// TODO: lock delay w/ limit after resetting of lock delay due to move/rotation of piece
+	// TODO: adding falling of tetromino via gameplay fall speed
+
+	// handle keyboard
+		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+
+		// harddrop input
+		if (currentKeyStates[this->HardDrop])
+		{
+			if (!this->onHarddrop) {
+				while (this->Move(M_D))
+					continue;
+
+				this->Lock();
+				
+				this->Next();
+				this->onHarddrop = true;
+				this->currentHold = 0;
+			}
+		}
+		else
+			this->onHarddrop = false;
+
+		// softdrop input
+		if (currentKeyStates[this->SoftDrop])
+		{
+			if (!this->SDSActivated) {
+				this->Move(M_D);
+				this->currentSDS = SDL_GetTicks64();
+				this->SDSActivated = true;
+			}
+			else if (this->SDSActivated && SDL_GetTicks64() - this->currentSDS >= this->SDS) {
+				this->Move(M_D);
+				this->currentSDS = SDL_GetTicks64();
+			}
+		}
+		else {
+			this->SDSActivated = false;
+			this->currentSDS = 0;
+		}
+
+		// hold tetromino
+		if (currentKeyStates[this->HoldTetrominoKey]) {
+			if (this->holdTetromino == nullptr) {
+				this->holdTetromino = this->currentTetromino;
+				this->currentTetromino = this->randomizer->Next();
+				this->currentHold++;
+			}
+			else {
+				if (this->currentHold < this->holdLimit) {
+					auto temp = this->holdTetromino;
+					this->holdTetromino = this->currentTetromino;
+					this->currentTetromino = temp;
+					this->currentHold++;
 				}
 			}
 		}
-		return true;
+
+		// rotation CW, CCW, and 180
+		if (currentKeyStates[this->RotateCW]) {
+			if (!this->onCWRotate) {
+				this->Rotate(TetrominoRotationEnum::R_CW);
+				this->onCWRotate = true;
+			}
+		}
+		else
+			this->onCWRotate = false;
+		if (currentKeyStates[this->RotateCCW]) {
+			if (!this->onCCWRotate) {
+				this->Rotate(TetrominoRotationEnum::R_CCW);
+				this->onCCWRotate = true;
+			}
+		}
+		else
+			this->onCCWRotate = false;
+		if (currentKeyStates[this->Rotate180]) {
+			if (!this->on180Rotate) {
+				this->Rotate(TetrominoRotationEnum::R_180);
+				this->on180Rotate = true;
+			}
+		}
+		else
+			this->on180Rotate = false;
+
+
+		// move left/right
+		if (currentKeyStates[this->MoveLeft] || currentKeyStates[this->MoveRight])
+		{
+			if (!this->ARRActivated) {
+				if (!this->onDAS) {
+					if (currentKeyStates[this->MoveLeft])
+						this->Move(M_L);
+					else
+						this->Move(M_R);
+					this->onDAS = true;
+					this->currentDAS = SDL_GetTicks64();
+				}
+				else if (this->onDAS && SDL_GetTicks64() - this->currentDAS >= this->DAS) {
+					this->ARRActivated = true;
+					this->currentARR = SDL_GetTicks();
+				}
+			}
+			else if (this->ARRActivated && SDL_GetTicks64() - this->currentARR >= this->ARR) {
+				if (currentKeyStates[this->MoveLeft])
+					this->Move(M_L);
+				else
+					this->Move(M_R);
+				this->currentARR = SDL_GetTicks();
+			}
+		}
+		else {
+			this->ARRActivated = false;
+			this->onDAS = false;
+			this->currentDAS = 0;
+			this->currentARR = 0;
+		}
+
 	}
 
 	bool TetrominoHandler::Move(TetrominoMoveEnum moveDir) {
 		bool canMove = false;
 		switch (moveDir) {
 			case M_L:
-				canMove = this->canMove(this->currentTetromino->GetCurrentState(),
-										this->currentTetromino->GetColumnOffset() - 1, 
-										this->currentTetromino->GetRowOffset());
+				canMove = CanMove(this->BoardState,
+								  this->currentTetromino->GetCurrentState(),
+								  this->currentTetromino->GetColumnOffset() - 1, 
+								  this->currentTetromino->GetRowOffset());
 				if (canMove)
 					this->currentTetromino->SetColumnOffset(this->currentTetromino->GetColumnOffset() - 1);
 				break;
 			case M_R:
-				canMove = this->canMove(this->currentTetromino->GetCurrentState(),
-										this->currentTetromino->GetColumnOffset() + 1, 
-										this->currentTetromino->GetRowOffset());
+				canMove = CanMove(this->BoardState,
+								  this->currentTetromino->GetCurrentState(),
+								  this->currentTetromino->GetColumnOffset() + 1, 
+								  this->currentTetromino->GetRowOffset());
 				if (canMove)
 					this->currentTetromino->SetColumnOffset(this->currentTetromino->GetColumnOffset() + 1);
 				break;
 			case M_D:
-				canMove = this->canMove(this->currentTetromino->GetCurrentState(),
-										this->currentTetromino->GetColumnOffset(), 
-										this->currentTetromino->GetRowOffset() + 1);
+				canMove = CanMove(this->BoardState,
+								  this->currentTetromino->GetCurrentState(),
+								  this->currentTetromino->GetColumnOffset(), 
+								  this->currentTetromino->GetRowOffset() + 1);
 				if (canMove)
 					this->currentTetromino->SetRowOffset(this->currentTetromino->GetRowOffset() + 1);
 				break;
@@ -58,7 +175,6 @@ namespace Tetromino {
 		return canMove;
 	}
 
-	// TODO: ROTATE, and maybe Rotation system base class (child classes: SRS, classic, etc...)and Rotation folder
 	bool TetrominoHandler::Rotate(TetrominoRotationEnum rotateDir) {
 		int resultingStateIndex = this->currentTetromino->GetCurrentStateIndex();
 		switch (rotateDir) {
@@ -73,9 +189,10 @@ namespace Tetromino {
 				break;
 		}
 
-		bool canMove = this->canMove(this->currentTetromino->GetRotationStateAt(resultingStateIndex),
-									 this->currentTetromino->GetColumnOffset(),
-									 this->currentTetromino->GetRowOffset());
+		bool canMove = CanMove(this->BoardState,
+							   this->currentTetromino->GetRotationStateAt(resultingStateIndex),
+							   this->currentTetromino->GetColumnOffset(),
+							   this->currentTetromino->GetRowOffset());
 		if (canMove)
 			this->currentTetromino->SetCurrentStateIndex(resultingStateIndex);
 		return canMove;
@@ -94,23 +211,13 @@ namespace Tetromino {
 		return this->currentTetromino;
 	}
 
-	void TetrominoHandler::HoldTetromino() {
-		if (this->holdTetromino == nullptr) {
-			this->holdTetromino = this->currentTetromino;
-			this->currentTetromino = this->randomizer->Next();
-		}
-		else {
-			auto temp = this->holdTetromino;
-			this->holdTetromino = this->currentTetromino;
-			this->currentTetromino = temp;
-		}
-	}
-
-	std::array<TetrominoBase*, 5> TetrominoHandler::PeekNext5Tetrominos() {
-		return this->randomizer->GetNext5();
+	const std::array<const TetrominoBase*, 5>& TetrominoHandler::PeekNext5Tetrominos() {
+		return this->randomizer->PeekNext5();
 	}
 
 	TetrominoHandler::~TetrominoHandler() {
 		delete this->randomizer;
+		delete this->currentTetromino;
+		delete this->holdTetromino;
 	}
 }

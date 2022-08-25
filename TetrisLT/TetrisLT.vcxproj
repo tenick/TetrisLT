@@ -175,7 +175,6 @@
     <ClInclude Include="h\Tetromino\TetrominoBase.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoHandler.hpp" />
     <ClInclude Include="h\Tetromino\Z.hpp" />
-    <ClInclude Include="h\timer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

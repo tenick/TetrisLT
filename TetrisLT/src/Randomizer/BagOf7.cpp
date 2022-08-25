@@ -15,9 +15,9 @@ namespace Randomizer {
 		return front;
 	}
 
-	std::array<TetrominoBase*, 5> BagOf7::GetNext5() {
+	const std::array<const TetrominoBase*, 5>& BagOf7::PeekNext5() {
 		auto queueCopy = this->tetrominoQueue;
-		std::array<TetrominoBase*, 5> arr;
+		std::array<const TetrominoBase*, 5> arr;
 		for (int i = 0; i < 5; i++) {
 			arr[i] = queueCopy.front();
 			queueCopy.pop();

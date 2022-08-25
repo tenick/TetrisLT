@@ -26,8 +26,10 @@ namespace Tetromino {
 		void SetCurrentStateIndex(int newStateIndex);
 		const std::vector<std::vector<TetrominoEnum>>& GetCurrentState();
 		const std::vector<std::vector<TetrominoEnum>>& GetRotationStateAt(int index);
+		const TetrominoEnum tetrominoEnum;
 	protected:
 		TetrominoBase(std::vector<std::vector<std::vector<TetrominoEnum>>> rotationStates,
+					  TetrominoEnum tetrominoEnumEquivalent,
 					  int startingRowOffset = 0, int startingColumnOffset = 4,
 					  int initialState = 0);
 		const std::vector<std::vector<std::vector<TetrominoEnum>>> RotationStates;
@@ -42,5 +44,8 @@ namespace Tetromino {
 	};
 	
 	TetrominoBase* EnumToTetromino(TetrominoEnum tetrEnum);
+	void EnumToRGBA(TetrominoEnum tetrEnum, uint8_t& R, uint8_t& G, uint8_t& B, uint8_t& A);
+	bool CanMove(const std::vector<std::vector<TetrominoEnum>>& boardState, const std::vector<std::vector<TetrominoEnum>>& tetrominoState, int newColOffset, int newRowOffset);
+
 
 }
