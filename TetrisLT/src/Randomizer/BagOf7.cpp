@@ -1,9 +1,8 @@
 #include "../../h/Randomizer/BagOf7.hpp"
-#include <iostream>
+
 namespace Randomizer {
 	BagOf7::BagOf7() {
 		this->refillQueue();
-		std::cout << "yo: " << this->tetrominoQueue.size() << "\n";
 	}
 
 	TetrominoBase* BagOf7::Next() {

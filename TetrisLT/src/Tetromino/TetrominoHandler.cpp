@@ -27,6 +27,8 @@ namespace Tetromino {
 	// update tetris states (time to get next piece? time to randomize? etc...)
 	// TODO: lock delay w/ limit after resetting of lock delay due to move/rotation of piece
 	// TODO: adding falling of tetromino via gameplay fall speed
+	// TODO: be able to set piece starting position
+
 
 	// handle keyboard
 		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
@@ -111,7 +113,7 @@ namespace Tetromino {
 
 
 		// move left
-		if (currentKeyStates[this->MoveLeft])
+		if (currentKeyStates[this->MoveLeft] && !this->rightARRActivated)
 		{
 			if (!this->leftARRActivated) {
 				if (!this->onLeftDAS) {
@@ -137,7 +139,7 @@ namespace Tetromino {
 		}
 
 		// move right
-		if (currentKeyStates[this->MoveRight])
+		if (currentKeyStates[this->MoveRight] && !this->leftARRActivated)
 		{
 			if (!this->rightARRActivated) {
 				if (!this->onRightDAS) {
