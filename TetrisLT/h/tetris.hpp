@@ -7,7 +7,7 @@
 
 class Tetris {
 public:
-	Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows = 20, int columns = 10);
+	Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows = 20, int columns = 10, int vanishZoneHeight=4);
 
 	void Update();
 	void OnWindowEvent();
@@ -21,6 +21,7 @@ private:
 	
 	const int ROWS;
 	const int COLUMNS;
+	const int VANISHZONEHEIGHT;
 
 	std::vector<std::vector<TetrominoEnum>> BoardState;
 

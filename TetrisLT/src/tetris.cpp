@@ -4,12 +4,13 @@
 #include "../h/Randomizer/BagOf7.hpp"
 #include <iostream>
 
-Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows, int columns) :
+Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows, int columns, int vanishZoneHeight) :
 	windowContext(windowContext),
 	renderContext(renderContext),
-	ROWS(rows),
+	ROWS(rows + vanishZoneHeight),
 	COLUMNS(columns),
-	BoardState(std::vector<std::vector<TetrominoEnum>>(rows, std::vector<TetrominoEnum>(columns, _))),
+	VANISHZONEHEIGHT(vanishZoneHeight),
+	BoardState(std::vector<std::vector<TetrominoEnum>>(rows + vanishZoneHeight, std::vector<TetrominoEnum>(columns, _))),
 	tetrominoHandler(TetrominoHandler(BoardState))
 {
 }
@@ -24,6 +25,7 @@ void Tetris::UpdateViewportByWindowSize() {
 	SDL_GetWindowSize(this->windowContext, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 	SDL_SetWindowMinimumSize(this->windowContext, SCREEN_HEIGHT / 3 + SCREEN_HEIGHT / 2, 100);
 
+
 	this->boardViewport.w = SCREEN_HEIGHT / 2;
 	this->boardViewport.h = SCREEN_HEIGHT;
 	this->boardViewport.x = SCREEN_WIDTH / 2 - this->boardViewport.w / 2;
@@ -32,12 +34,12 @@ void Tetris::UpdateViewportByWindowSize() {
 	this->swapViewport.w = SCREEN_HEIGHT / 6;
 	this->swapViewport.h = SCREEN_HEIGHT / 6;
 	this->swapViewport.x = SCREEN_WIDTH / 2 - this->boardViewport.w / 2 - this->swapViewport.w;
-	this->swapViewport.y = 0;
+	this->swapViewport.y = SCREEN_HEIGHT / 6;
 
 	this->next5Viewport.w = SCREEN_HEIGHT / 6;
 	this->next5Viewport.h = SCREEN_HEIGHT / 6 * 5;
 	this->next5Viewport.x = SCREEN_WIDTH / 2 + this->boardViewport.w / 2;
-	this->next5Viewport.y = 0;
+	this->next5Viewport.y = SCREEN_HEIGHT / 6;
 }
 
 void Tetris::Update() {
@@ -46,12 +48,14 @@ void Tetris::Update() {
 
 void Tetris::Render() {
 
-	// draw current board state in board viewport
+	// drawing current board state
 	SDL_RenderSetViewport(this->renderContext, &this->boardViewport);
 	SDL_FRect cellRect{};
+
 	cellRect.w = (float)this->boardViewport.w / this->COLUMNS;
 	cellRect.h = (float)this->boardViewport.h / this->ROWS;
-	SDL_SetRenderDrawColor(this->renderContext, 0xBB, 0xBB, 0xBB, 0xFF);
+	
+		
 	for (int r = 0; r < this->ROWS; r++) {
 		for (int c = 0; c < this->COLUMNS; c++) {
 			TetrominoEnum currCell = this->BoardState[r][c];
@@ -59,13 +63,25 @@ void Tetris::Render() {
 				SDL_SetRenderDrawColor(this->renderContext, 0xBB, 0xBB, 0xBB, 0xFF);
 			else {
 				uint8_t r, g, b, a;
-				EnumToRGBA(currCell, r, g, b, a);
+				Tetromino::EnumToRGBA(currCell, r, g, b, a);
 				SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 			}
 
 			cellRect.x = c * cellRect.w;
 			cellRect.y = r * cellRect.h;
 			SDL_RenderFillRectF(this->renderContext, &cellRect);
+		}
+	}
+		// draw over board to represent vanish zone (black bg)
+	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
+	for (int r = 0; r < this->VANISHZONEHEIGHT; r++) {
+		for (int c = 0; c < this->COLUMNS; c++) {
+			TetrominoEnum currCell = this->BoardState[r][c];
+			if (currCell == _){
+				cellRect.x = c * cellRect.w;
+				cellRect.y = r * cellRect.h;
+				SDL_RenderFillRectF(this->renderContext, &cellRect);
+			}
 		}
 	}
 
@@ -91,7 +107,7 @@ void Tetris::Render() {
 
 
 	uint8_t r, g, b, a;
-	EnumToRGBA(currentTetromino->tetrominoEnum, r, g, b, a);
+	Tetromino::EnumToRGBA(currentTetromino->tetrominoEnum, r, g, b, a);
 	SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 	for (int r = 0; r < currentTetrominoState.size(); r++) {
 		for (int c = 0; c < currentTetrominoState[0].size(); c++) {
@@ -104,6 +120,9 @@ void Tetris::Render() {
 			}
 		}
 	}
+
+
+	
 
 	// draw current tetromino shadow
 	int resultingRowOffset = currentRowOffset;
@@ -136,7 +155,7 @@ void Tetris::Render() {
 		SDL_RenderFillRectF(this->renderContext, &viewportRect);
 
 
-		EnumToRGBA(holdTetromino->tetrominoEnum, r, g, b, a);
+		Tetromino::EnumToRGBA(holdTetromino->tetrominoEnum, r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
 		auto holdTetrominoState = holdTetromino->GetCurrentState();
@@ -174,7 +193,7 @@ void Tetris::Render() {
 	for (int i = 0; i < next5Tetrominos.size(); i++) {
 
 		const TetrominoBase* tetromino = next5Tetrominos[i];
-		EnumToRGBA(tetromino->tetrominoEnum, r, g, b, a);
+		Tetromino::EnumToRGBA(tetromino->tetrominoEnum, r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
 		auto& tetrominoState = tetromino->GetCurrentState();

@@ -21,18 +21,22 @@ namespace Tetromino {
 		const std::array<const TetrominoBase*, 5> PeekNext5Tetrominos();
 		~TetrominoHandler();
 	private:
+		// playfield
 		std::vector<std::vector<TetrominoEnum>>& BoardState;
 		const int BoardHeight;
 		const int BoardWidth;
+
+
+
 		TetrominoBase* currentTetromino = nullptr;
 		TetrominoBase* holdTetromino = nullptr;
 		Randomizer::RandomizerBase* randomizer;
 
 		// settings
-		int DAS = 100; // Delayed Auto Shift (ms)
+		int DAS = 120; // Delayed Auto Shift (ms)
 		int ARR = 0;  // Auto Repeat Rate (ms)
 		int SDS = 10;  // Soft Drop Speed (ms)
-		int Gravity = 100; // Automatic dropping speed (ms)
+		int Gravity = 500; // Automatic dropping speed (ms)
 		int LockDelay = 100; // Delay before locking tetromino in place (ms)
 		int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
 

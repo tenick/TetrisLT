@@ -24,13 +24,26 @@ namespace Tetromino {
 	}
 
 	void TetrominoHandler::Update() {
-	// update tetris states (time to get next piece? time to randomize? etc...)
-	// TODO: lock delay w/ limit after resetting of lock delay due to move/rotation of piece
-	// TODO: adding falling of tetromino via gameplay fall speed
-	// TODO: be able to set piece starting position
+		static int gravityStartTime = SDL_GetTicks64();
+		// TODO: piece holding improvement (don't keep previous state of the piece)
+		// TODO: lock delay w/ limit after resetting of lock delay due to move/rotation of piece
+		// TODO: be able to set piece starting position
+		// TODO: Loss conditions
+		// TODO: Reset button
+		// TODO: Line clearing
+		// TODO: Scoring
+		// TODO: Skin customization
+		// TODO: UI
+		// TODO: Multiplayer
+
+		// gravity
+		if (SDL_GetTicks64() - gravityStartTime >= this->Gravity) {
+			this->Move(M_D);
+			gravityStartTime = SDL_GetTicks64();
+		}
 
 
-	// handle keyboard
+		// handle keyboard
 		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
 		// harddrop input
