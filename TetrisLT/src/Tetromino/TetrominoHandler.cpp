@@ -11,12 +11,12 @@ namespace Tetromino {
 
 	void TetrominoHandler::Lock() {
 		auto currentTetromino = this->GetCurrentTetromino();
-		auto currentTetrominoState = currentTetromino->GetCurrentState();
+		auto currentTetrominoState = currentTetromino->GetCurrentRotationState();
 		// add current tetromino to the board state
-		for (int r = 0; r < currentTetromino->GetHeight(); r++) {
-			for (int c = 0; c < currentTetromino->GetWidth(); c++) {
-				int boardR = r + currentTetromino->GetRowOffset();
-				int boardC = c + currentTetromino->GetColumnOffset();
+		for (int r = 0; r < currentTetromino->Height(); r++) {
+			for (int c = 0; c < currentTetromino->Width(); c++) {
+				int boardR = r + currentTetromino->RowOffset;
+				int boardC = c + currentTetromino->ColumnOffset;
 				if (currentTetrominoState[r][c] != _)
 					this->BoardState[boardR][boardC] = currentTetrominoState[r][c];
 			}
@@ -83,16 +83,18 @@ namespace Tetromino {
 
 		// hold tetromino
 		if (currentKeyStates[this->HoldTetrominoKey]) {
-			if (this->holdTetromino == nullptr) {
-				this->holdTetromino = this->currentTetromino;
+			if (this->holdTetromino == _) { // no hold yet
+				this->holdTetromino = this->currentTetromino->GetTetrominoEnumEquivalent();
+				delete this->currentTetromino;
 				this->currentTetromino = this->randomizer->Next();
 				this->currentHold++;
 			}
 			else {
 				if (this->currentHold < this->holdLimit) {
-					auto temp = this->holdTetromino;
-					this->holdTetromino = this->currentTetromino;
-					this->currentTetromino = temp;
+					TetrominoEnum temp = this->holdTetromino;
+					this->holdTetromino = this->currentTetromino->GetTetrominoEnumEquivalent();
+					delete this->currentTetromino;
+					this->currentTetromino = EnumToTetromino(temp);
 					this->currentHold++;
 				}
 			}
@@ -185,34 +187,34 @@ namespace Tetromino {
 		switch (moveDir) {
 			case M_L:
 				canMove = CanMove(this->BoardState,
-								  this->currentTetromino->GetCurrentState(),
-								  this->currentTetromino->GetColumnOffset() - 1, 
-								  this->currentTetromino->GetRowOffset());
+								  this->currentTetromino->GetCurrentRotationState(),
+								  this->currentTetromino->ColumnOffset - 1, 
+								  this->currentTetromino->RowOffset);
 				if (canMove)
-					this->currentTetromino->SetColumnOffset(this->currentTetromino->GetColumnOffset() - 1);
+					this->currentTetromino->ColumnOffset -= 1;
 				break;
 			case M_R:
 				canMove = CanMove(this->BoardState,
-								  this->currentTetromino->GetCurrentState(),
-								  this->currentTetromino->GetColumnOffset() + 1, 
-								  this->currentTetromino->GetRowOffset());
+								  this->currentTetromino->GetCurrentRotationState(),
+								  this->currentTetromino->ColumnOffset + 1, 
+								  this->currentTetromino->RowOffset);
 				if (canMove)
-					this->currentTetromino->SetColumnOffset(this->currentTetromino->GetColumnOffset() + 1);
+					this->currentTetromino->ColumnOffset += 1;
 				break;
 			case M_D:
 				canMove = CanMove(this->BoardState,
-								  this->currentTetromino->GetCurrentState(),
-								  this->currentTetromino->GetColumnOffset(), 
-								  this->currentTetromino->GetRowOffset() + 1);
+								  this->currentTetromino->GetCurrentRotationState(),
+								  this->currentTetromino->ColumnOffset, 
+								  this->currentTetromino->RowOffset + 1);
 				if (canMove)
-					this->currentTetromino->SetRowOffset(this->currentTetromino->GetRowOffset() + 1);
+					this->currentTetromino->RowOffset += 1;
 				break;
 		}
 		return canMove;
 	}
 
 	bool TetrominoHandler::Rotate(TetrominoRotationEnum rotateDir) {
-		int resultingStateIndex = this->currentTetromino->GetCurrentStateIndex();
+		int resultingStateIndex = this->currentTetromino->GetCurrentRotationStateIndex();
 		switch (rotateDir) {
 			case R_CW:
 				resultingStateIndex++;
@@ -227,10 +229,10 @@ namespace Tetromino {
 
 		bool canMove = CanMove(this->BoardState,
 							   this->currentTetromino->GetRotationStateAt(resultingStateIndex),
-							   this->currentTetromino->GetColumnOffset(),
-							   this->currentTetromino->GetRowOffset());
+							   this->currentTetromino->ColumnOffset,
+							   this->currentTetromino->RowOffset);
 		if (canMove)
-			this->currentTetromino->SetCurrentStateIndex(resultingStateIndex);
+			this->currentTetromino->SetCurrentRotationStateIndex(resultingStateIndex);
 		return canMove;
 	}
 
@@ -239,7 +241,7 @@ namespace Tetromino {
 		this->currentTetromino = this->randomizer->Next();
 	}
 
-	TetrominoBase* TetrominoHandler::GetHoldTetromino() {
+	TetrominoEnum TetrominoHandler::GetHoldTetromino() {
 		return this->holdTetromino;
 	}
 
@@ -254,6 +256,5 @@ namespace Tetromino {
 	TetrominoHandler::~TetrominoHandler() {
 		delete this->randomizer;
 		delete this->currentTetromino;
-		delete this->holdTetromino;
 	}
 }

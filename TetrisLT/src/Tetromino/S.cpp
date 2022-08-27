@@ -1,9 +1,21 @@
 #include "../../h/Tetromino/S.hpp"
 
 namespace Tetromino {
+	S::S(int startingRowOffset, int startingColumnOffset,
+		 int initialState)
+		: TetrominoBase(startingRowOffset, startingColumnOffset, initialState)
+	{
+	}
 
-	S::S() : TetrominoBase(
-		std::vector<std::vector<std::vector<TetrominoEnum>>>(
+	TetrominoEnum S::GetTetrominoEnumEquivalent() const {
+		return S::TetrominoEnumEquivalent;
+	}
+	const std::vector<std::vector<std::vector<TetrominoEnum>>>& S::GetRotationStates() const {
+		return S::RotationStates;
+	};
+
+	const TetrominoEnum S::TetrominoEnumEquivalent(S_);
+	const std::vector<std::vector<std::vector<TetrominoEnum>>> S::RotationStates(
 		{ {
 			{
 				{{_ , S_, S_},
@@ -26,9 +38,5 @@ namespace Tetromino {
 				 {_ , S_, _ }}
 			}
 		} }
-		),
-		S_
-	)
-	{
-	}
+	);
 }

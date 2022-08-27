@@ -101,13 +101,13 @@ void Tetris::Render() {
 	// draw current tetromino
 	SDL_SetRenderDrawColor(this->renderContext, (uint8_t)0xFF, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0xFF);
 	TetrominoBase* currentTetromino = this->tetrominoHandler.GetCurrentTetromino();
-	int currentColumnOffset = currentTetromino->GetColumnOffset();
-	int currentRowOffset = currentTetromino->GetRowOffset();
-	auto currentTetrominoState = currentTetromino->GetCurrentState();
+	int currentColumnOffset = currentTetromino->ColumnOffset;
+	int currentRowOffset = currentTetromino->RowOffset;
+	auto& currentTetrominoState = currentTetromino->GetCurrentRotationState();
 
 
 	uint8_t r, g, b, a;
-	Tetromino::EnumToRGBA(currentTetromino->tetrominoEnum, r, g, b, a);
+	Tetromino::EnumToRGBA(currentTetromino->GetTetrominoEnumEquivalent(), r, g, b, a);
 	SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 	for (int r = 0; r < currentTetrominoState.size(); r++) {
 		for (int c = 0; c < currentTetrominoState[0].size(); c++) {
@@ -143,9 +143,9 @@ void Tetris::Render() {
 
 
 	// draw swap viewport
-	TetrominoBase* holdTetromino = this->tetrominoHandler.GetHoldTetromino();
+	TetrominoEnum holdTetromino = this->tetrominoHandler.GetHoldTetromino();
 	SDL_FRect viewportRect{};
-	if (holdTetromino != nullptr) {
+	if (holdTetromino != _) {
 		SDL_RenderSetViewport(this->renderContext, &this->swapViewport);
 
 		// clear swap viewport 1st by rendering black bg
@@ -155,10 +155,10 @@ void Tetris::Render() {
 		SDL_RenderFillRectF(this->renderContext, &viewportRect);
 
 
-		Tetromino::EnumToRGBA(holdTetromino->tetrominoEnum, r, g, b, a);
+		Tetromino::EnumToRGBA(holdTetromino, r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
-		auto holdTetrominoState = holdTetromino->GetCurrentState();
+		auto& holdTetrominoState = EnumToRotationStates(holdTetromino)[0];
 
 		cellRect.w = this->swapViewport.w / holdTetrominoState[0].size();
 		cellRect.h = this->swapViewport.h / holdTetrominoState.size();
@@ -193,10 +193,10 @@ void Tetris::Render() {
 	for (int i = 0; i < next5Tetrominos.size(); i++) {
 
 		const TetrominoBase* tetromino = next5Tetrominos[i];
-		Tetromino::EnumToRGBA(tetromino->tetrominoEnum, r, g, b, a);
+		Tetromino::EnumToRGBA(tetromino->GetTetrominoEnumEquivalent(), r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
-		auto& tetrominoState = tetromino->GetCurrentState();
+		auto& tetrominoState = tetromino->GetCurrentRotationState();
 
 		cellRect.w = this->next5Viewport.w / tetrominoState[0].size();
 		cellRect.h = this->next5Viewport.h / tetrominoState.size() / 5;

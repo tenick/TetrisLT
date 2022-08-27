@@ -8,34 +8,38 @@
 #include "../../h/Tetromino/Z.hpp"
 
 namespace Tetromino {
-	TetrominoBase::TetrominoBase(std::vector<std::vector<std::vector<TetrominoEnum>>> rotationStates,
-								 TetrominoEnum tetrominoEnumEquivalent,
-								 int initialRowOffset, int initialColumnOffset,
+	TetrominoBase::TetrominoBase(int initialRowOffset, int initialColumnOffset,
 								 int initialRotationState) 
-		: RotationStates(rotationStates),
-		  tetrominoEnum(tetrominoEnumEquivalent),
-		  tetrominoHeight(rotationStates[0].size()), tetrominoWidth(rotationStates[0][0].size()),
-		  rowOffset(initialRowOffset), columnOffset(initialColumnOffset),
-		  currentRotationState(initialRotationState),
-		  statesAmt(rotationStates.size())
+		: RowOffset(initialRowOffset), ColumnOffset(initialColumnOffset),
+		  CurrentRotationStateIndex(initialRotationState)
 	{
 	}
-	int TetrominoBase::GetRowOffset() { return this->rowOffset; };
-	int TetrominoBase::GetColumnOffset() { return this->columnOffset; }
-	void TetrominoBase::SetRowOffset(int newRowOffset) { this->rowOffset = newRowOffset; }
-	void TetrominoBase::SetColumnOffset(int newColumnOffset) { this->columnOffset = newColumnOffset; }
-	int TetrominoBase::GetWidth() { return this->tetrominoWidth; }
-	int TetrominoBase::GetHeight() { return this->tetrominoHeight; }
-	int TetrominoBase::GetCurrentStateIndex() { return this->currentRotationState; }
-	void TetrominoBase::SetCurrentStateIndex(int newStateIndex) { this->currentRotationState = this->adjustStateIndex(newStateIndex); }
-	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetCurrentState() const { return this->RotationStates[this->currentRotationState]; }
-	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetRotationStateAt(int index) const {
-		int actualIndex = this->adjustStateIndex(index);
-		return this->RotationStates[actualIndex];
+
+	int TetrominoBase::Height() const {
+		return GetRotationStates()[0].size();
 	}
-	int TetrominoBase::adjustStateIndex(int index) const {
-		int actualIndex = index % this->statesAmt;
-		if (actualIndex < 0) actualIndex += this->statesAmt;
+	int TetrominoBase::Width() const {
+		return GetRotationStates()[0][0].size();
+	}
+	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetCurrentRotationState() const {
+		return this->GetRotationStates()[this->GetCurrentRotationStateIndex()];
+	}
+	const std::vector<std::vector<TetrominoEnum>>& TetrominoBase::GetRotationStateAt(int index) const {
+		return this->GetRotationStates()[this->AdjustRotationStateIndex(index)];
+	};
+	int TetrominoBase::RotationStatesAmount() const {
+		return this->GetRotationStates().size();
+	}
+	int TetrominoBase::GetCurrentRotationStateIndex() const {
+		return this->CurrentRotationStateIndex;
+	}
+	void TetrominoBase::SetCurrentRotationStateIndex(int newStateIndex) {
+		this->CurrentRotationStateIndex = this->AdjustRotationStateIndex(newStateIndex);
+	}
+
+	int TetrominoBase::AdjustRotationStateIndex(int stateIndex) const {
+		int actualIndex = stateIndex % this->RotationStatesAmount();
+		if (actualIndex < 0) actualIndex += this->RotationStatesAmount();
 		return actualIndex;
 	}
 
@@ -56,8 +60,6 @@ namespace Tetromino {
 				return new T;
 			case Z_:
 				return new Z;
-			default:
-				return nullptr;
 		}
 	}
 	void EnumToRGBA(TetrominoEnum tetrEnum, uint8_t& R, uint8_t& G, uint8_t& B, uint8_t& A) {
@@ -78,6 +80,26 @@ namespace Tetromino {
 			R = 0xFF; G = 0x00; B = 0x00; A = 0xFF; break; // red
 		}
 	}
+
+	const std::vector<std::vector<std::vector<TetrominoEnum>>>& EnumToRotationStates(TetrominoEnum tetrEnum) {
+		switch (tetrEnum) {
+			case I_:
+				return I::RotationStates;
+			case J_:
+				return J::RotationStates;
+			case L_:
+				return L::RotationStates;
+			case O_:
+				return O::RotationStates;
+			case S_:
+				return S::RotationStates;
+			case T_:
+				return T::RotationStates;
+			case Z_:
+				return Z::RotationStates;
+		}
+	}
+
 
 	bool CanMove(const std::vector<std::vector<TetrominoEnum>>& boardState, const std::vector<std::vector<TetrominoEnum>>& tetrominoState, int newColOffset, int newRowOffset) {
 		int boardHeight = boardState.size();

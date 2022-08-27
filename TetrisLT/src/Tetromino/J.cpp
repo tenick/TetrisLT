@@ -1,8 +1,21 @@
 #include "../../h/Tetromino/J.hpp"
 
 namespace Tetromino {
-	J::J() : TetrominoBase(
-		std::vector<std::vector<std::vector<TetrominoEnum>>>(
+	J::J(int startingRowOffset, int startingColumnOffset,
+		int initialState)
+		: TetrominoBase(startingRowOffset, startingColumnOffset, initialState)
+	{
+	}
+
+	TetrominoEnum J::GetTetrominoEnumEquivalent() const {
+		return J::TetrominoEnumEquivalent;
+	}
+	const std::vector<std::vector<std::vector<TetrominoEnum>>>& J::GetRotationStates() const {
+		return J::RotationStates;
+	};
+
+	const TetrominoEnum J::TetrominoEnumEquivalent(J_);
+	const std::vector<std::vector<std::vector<TetrominoEnum>>> J::RotationStates(
 		{ {
 			{
 				{{J_, _ , _ },
@@ -25,9 +38,5 @@ namespace Tetromino {
 				 {J_, J_, _ }}
 			}
 		} }
-		),
-		J_
-	)
-	{
-	}
+	);
 }

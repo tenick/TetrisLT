@@ -16,7 +16,7 @@ namespace Tetromino {
 		void Lock();
 		void Next();
 		void Update();
-		TetrominoBase* GetHoldTetromino();
+		TetrominoEnum GetHoldTetromino();
 		TetrominoBase* GetCurrentTetromino();
 		const std::array<const TetrominoBase*, 5> PeekNext5Tetrominos();
 		~TetrominoHandler();
@@ -29,7 +29,7 @@ namespace Tetromino {
 
 
 		TetrominoBase* currentTetromino = nullptr;
-		TetrominoBase* holdTetromino = nullptr;
+		TetrominoEnum holdTetromino = _;
 		Randomizer::RandomizerBase* randomizer;
 
 		// settings
