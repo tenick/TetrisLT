@@ -21,13 +21,40 @@ namespace Tetromino {
 					this->BoardState[boardR][boardC] = currentTetrominoState[r][c];
 			}
 		}
+
+		this->Next();
+		this->currentHold = 0;
+	}
+
+	void TetrominoHandler::ResetLock() {
+		this->isLocking = false;
+		this->currentLockReset = 0;
+	}
+
+	void TetrominoHandler::StartLockDelay() {
+		if (!this->isLocking) {
+			this->isLocking = true;
+			this->currentLockTime = SDL_GetTicks64();
+		}
+	}
+
+	void TetrominoHandler::ResetLockDelay(int increment) {
+		this->currentLockReset += increment;
+		if (this->currentLockReset >= this->LockDelayResetLimit) {
+			this->Lock();
+			this->ResetLock();
+		}
+		else
+			this->currentLockTime = SDL_GetTicks64();
 	}
 
 	void TetrominoHandler::Update() {
+		// handle keyboard
+		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+		// timer
 		static int gravityStartTime = SDL_GetTicks64();
-		// TODO: piece holding improvement (don't keep previous state of the piece)
-		// TODO: lock delay w/ limit after resetting of lock delay due to move/rotation of piece
-		// TODO: be able to set piece starting position
+
+		// TODO: be able to set piece starting position (add left-handed/right-handed option)
 		// TODO: Loss conditions
 		// TODO: Reset button
 		// TODO: Line clearing
@@ -38,13 +65,13 @@ namespace Tetromino {
 
 		// gravity
 		if (SDL_GetTicks64() - gravityStartTime >= this->Gravity) {
-			this->Move(M_D);
+			if (!this->Move(M_D))
+				this->StartLockDelay();
+			else
+				this->ResetLock();
+
 			gravityStartTime = SDL_GetTicks64();
 		}
-
-
-		// handle keyboard
-		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
 		// harddrop input
 		if (currentKeyStates[this->HardDrop])
@@ -54,10 +81,9 @@ namespace Tetromino {
 					continue;
 
 				this->Lock();
+				this->ResetLock();
 				
-				this->Next();
 				this->onHarddrop = true;
-				this->currentHold = 0;
 			}
 		}
 		else
@@ -67,7 +93,11 @@ namespace Tetromino {
 		if (currentKeyStates[this->SoftDrop])
 		{
 			if (!this->SDSActivated) {
-				this->Move(M_D);
+				if (!this->Move(M_D))
+					this->StartLockDelay();
+				else
+					this->ResetLock();
+
 				this->currentSDS = SDL_GetTicks64();
 				this->SDSActivated = true;
 			}
@@ -81,6 +111,13 @@ namespace Tetromino {
 			this->currentSDS = 0;
 		}
 
+		// lock delay handling
+		if (this->isLocking && SDL_GetTicks64() - this->currentLockTime >= this->LockDelay) {
+			this->Lock();
+			this->ResetLock();
+		}
+
+
 		// hold tetromino
 		if (currentKeyStates[this->HoldTetrominoKey]) {
 			if (this->holdTetromino == _) { // no hold yet
@@ -88,6 +125,8 @@ namespace Tetromino {
 				delete this->currentTetromino;
 				this->currentTetromino = this->randomizer->Next();
 				this->currentHold++;
+
+				this->ResetLock();
 			}
 			else {
 				if (this->currentHold < this->holdLimit) {
@@ -96,14 +135,19 @@ namespace Tetromino {
 					delete this->currentTetromino;
 					this->currentTetromino = EnumToTetromino(temp);
 					this->currentHold++;
+
+					this->ResetLock();
 				}
 			}
+
+			
 		}
 
 		// rotation CW, CCW, and 180
 		if (currentKeyStates[this->RotateCW]) {
 			if (!this->onCWRotate) {
-				this->Rotate(TetrominoRotationEnum::R_CW);
+				if (this->Rotate(TetrominoRotationEnum::R_CW))
+					this->ResetLockDelay();
 				this->onCWRotate = true;
 			}
 		}
@@ -111,7 +155,8 @@ namespace Tetromino {
 			this->onCWRotate = false;
 		if (currentKeyStates[this->RotateCCW]) {
 			if (!this->onCCWRotate) {
-				this->Rotate(TetrominoRotationEnum::R_CCW);
+				if(this->Rotate(TetrominoRotationEnum::R_CCW))
+					this->ResetLockDelay();
 				this->onCCWRotate = true;
 			}
 		}
@@ -119,7 +164,8 @@ namespace Tetromino {
 			this->onCCWRotate = false;
 		if (currentKeyStates[this->Rotate180]) {
 			if (!this->on180Rotate) {
-				this->Rotate(TetrominoRotationEnum::R_180);
+				if(this->Rotate(TetrominoRotationEnum::R_180))
+					this->ResetLockDelay();
 				this->on180Rotate = true;
 			}
 		}
@@ -132,7 +178,8 @@ namespace Tetromino {
 		{
 			if (!this->leftARRActivated) {
 				if (!this->onLeftDAS) {
-					this->Move(M_L);
+					if (this->Move(M_L))
+						this->ResetLockDelay();
 					this->onLeftDAS = true;
 					this->currentLeftDAS = SDL_GetTicks64();
 				}
@@ -142,7 +189,8 @@ namespace Tetromino {
 				}
 			}
 			else if (this->leftARRActivated && SDL_GetTicks64() - this->currentLeftARR >= this->ARR) {
-				this->Move(M_L);
+				if (this->Move(M_L))
+					this->ResetLockDelay();
 				this->currentLeftARR = SDL_GetTicks();
 			}
 		}
@@ -158,7 +206,8 @@ namespace Tetromino {
 		{
 			if (!this->rightARRActivated) {
 				if (!this->onRightDAS) {
-					this->Move(M_R);
+					if(this->Move(M_R))
+						this->ResetLockDelay();
 					this->onRightDAS = true;
 					this->currentRightDAS = SDL_GetTicks64();
 				}
@@ -168,7 +217,8 @@ namespace Tetromino {
 				}
 			}
 			else if (this->rightARRActivated && SDL_GetTicks64() - this->currentRightARR >= this->ARR) {
-				this->Move(M_R);
+				if (this->Move(M_R))
+					this->ResetLockDelay();
 				this->currentRightARR = SDL_GetTicks();
 			}
 		}

@@ -21,11 +21,15 @@ namespace Tetromino {
 		const std::array<const TetrominoBase*, 5> PeekNext5Tetrominos();
 		~TetrominoHandler();
 	private:
+		// helpers
+		void ResetLock();
+		void ResetLockDelay(int increment=1);
+		void StartLockDelay();
+
 		// playfield
 		std::vector<std::vector<TetrominoEnum>>& BoardState;
 		const int BoardHeight;
 		const int BoardWidth;
-
 
 
 		TetrominoBase* currentTetromino = nullptr;
@@ -36,8 +40,8 @@ namespace Tetromino {
 		int DAS = 120; // Delayed Auto Shift (ms)
 		int ARR = 0;  // Auto Repeat Rate (ms)
 		int SDS = 10;  // Soft Drop Speed (ms)
-		int Gravity = 500; // Automatic dropping speed (ms)
-		int LockDelay = 100; // Delay before locking tetromino in place (ms)
+		int Gravity = 50; // Automatic dropping speed (ms)
+		int LockDelay = 300; // Delay before locking tetromino in place (ms)
 		int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
 
 		SDL_Scancode MoveLeft = SDL_SCANCODE_LEFT;
@@ -54,6 +58,10 @@ namespace Tetromino {
 
 		bool SDSActivated = false;
 		int currentSDS = 0;
+
+		bool isLocking = false;
+		int currentLockTime = 0;
+		int currentLockReset = 0;
 
 		int holdLimit = 1;
 		int currentHold = 0;
