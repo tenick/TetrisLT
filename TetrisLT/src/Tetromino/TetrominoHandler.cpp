@@ -12,6 +12,7 @@ namespace Tetromino {
 	void TetrominoHandler::Lock() {
 		auto currentTetromino = this->GetCurrentTetromino();
 		auto currentTetrominoState = currentTetromino->GetCurrentRotationState();
+
 		// add current tetromino to the board state
 		for (int r = 0; r < currentTetromino->Height(); r++) {
 			for (int c = 0; c < currentTetromino->Width(); c++) {
@@ -21,6 +22,25 @@ namespace Tetromino {
 					this->BoardState[boardR][boardC] = currentTetrominoState[r][c];
 			}
 		}
+
+		// clear lines
+		std::vector<std::vector<TetrominoEnum>> newBoard(this->BoardHeight, std::vector<TetrominoEnum>(this->BoardWidth, _));
+		int rowToAdd = 0;
+		for (int r = this->BoardHeight - 1; r >= 0; r--) {
+			const std::vector<TetrominoEnum>& column = this->BoardState[r];
+			bool columnClearable = true;
+			for (int c = 0; c < this->BoardWidth; c++) {
+				if (this->BoardState[r][c] == _) {
+					columnClearable = false;
+					break;
+				}
+			}
+			if (!columnClearable)
+				newBoard[r + rowToAdd] = column;
+			else
+				rowToAdd++;
+		}
+		this->BoardState = newBoard;
 
 		this->Next();
 		this->currentHold = 0;
@@ -54,10 +74,10 @@ namespace Tetromino {
 		// timer
 		static int gravityStartTime = SDL_GetTicks64();
 
+		// TODO: wall kick mechanism (SRS)
 		// TODO: be able to set piece starting position (add left-handed/right-handed option)
 		// TODO: Loss conditions
 		// TODO: Reset button
-		// TODO: Line clearing
 		// TODO: Scoring
 		// TODO: Skin customization
 		// TODO: UI
