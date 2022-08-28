@@ -60,7 +60,7 @@ namespace Tetromino {
 		int DAS = 120; // Delayed Auto Shift (ms)
 		int ARR = 0;  // Auto Repeat Rate (ms)
 		int SDS = 10;  // Soft Drop Speed (ms)
-		int Gravity = 200; // Automatic dropping speed (ms)
+		int Gravity = 50; // Automatic dropping speed (ms)
 		int LockDelay = 400; // Delay before locking tetromino in place (ms)
 		int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
 
