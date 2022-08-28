@@ -1,8 +1,6 @@
 #include "../h/tetris.hpp"
-#include "../h/Tetromino/I.hpp"
-#include "../h/Randomizer/RandomizerBase.hpp"
-#include "../h/Randomizer/BagOf7.hpp"
-#include <iostream>
+
+#include "../h/Tetromino/TetrominoHelpers.hpp"
 
 Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows, int columns, int vanishZoneHeight) :
 	windowContext(windowContext),
@@ -158,7 +156,7 @@ void Tetris::Render() {
 		Tetromino::EnumToRGBA(holdTetromino, r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
-		auto& holdTetrominoState = EnumToRotationStates(holdTetromino)[0];
+		auto& holdTetrominoState = EnumToRotationStates(this->tetrominoHandler.GetRotationSystemEnumEquivalent(), holdTetromino)[0];
 
 		cellRect.w = this->swapViewport.w / holdTetrominoState[0].size();
 		cellRect.h = this->swapViewport.h / holdTetrominoState.size();
@@ -192,11 +190,10 @@ void Tetris::Render() {
 	cellRect.h = this->next5Viewport.h / 5;
 	for (int i = 0; i < next5Tetrominos.size(); i++) {
 
-		const TetrominoBase* tetromino = next5Tetrominos[i];
-		Tetromino::EnumToRGBA(tetromino->GetTetrominoEnumEquivalent(), r, g, b, a);
+		Tetromino::EnumToRGBA(next5Tetrominos[i], r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
-		auto& tetrominoState = tetromino->GetCurrentRotationState();
+		auto& tetrominoState = EnumToRotationStates(this->tetrominoHandler.GetRotationSystemEnumEquivalent(), next5Tetrominos[i])[0];
 
 		cellRect.w = this->next5Viewport.w / tetrominoState[0].size();
 		cellRect.h = this->next5Viewport.h / tetrominoState.size() / 5;

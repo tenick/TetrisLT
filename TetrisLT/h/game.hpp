@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
 #include <SDL.h>
 #include <string>
@@ -35,3 +36,5 @@ private:
     //Event handler
     SDL_Event e;
 };
+
+#endif

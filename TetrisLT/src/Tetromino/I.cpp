@@ -1,9 +1,10 @@
 #include "../../h/Tetromino/I.hpp"
 
 namespace Tetromino {
-	I::I(int startingRowOffset, int startingColumnOffset,
+	I::I(RotationSystem::RotationSystemBase*& rsBase,
+		 int startingRowOffset, int startingColumnOffset,
 		 int initialState)
-		: TetrominoBase(startingRowOffset, startingColumnOffset, initialState)
+		: TetrominoBase(rsBase, startingRowOffset, startingColumnOffset, initialState)
 	{
 	}
 
@@ -11,36 +12,8 @@ namespace Tetromino {
 		return I::TetrominoEnumEquivalent;
 	}
 	const std::vector<std::vector<std::vector<TetrominoEnum>>>& I::GetRotationStates() const {
-		return I::RotationStates;
+		return this->rotationSystem->GetTetrominoRotationStates().at(this->GetTetrominoEnumEquivalent());
 	};
 
 	const TetrominoEnum I::TetrominoEnumEquivalent(I_);
-	const std::vector<std::vector<std::vector<TetrominoEnum>>> I::RotationStates(
-		{ {
-			{
-				{{_ , _ , _ , _ },
-				 {I_, I_, I_, I_},
-				 {_ , _ , _ , _ },
-				 {_ , _ , _ , _ }},
-			},
-			{
-				{{_ , _ , I_, _ },
-				 {_ , _ , I_, _ },
-				 {_ , _ , I_, _ },
-				 {_ , _ , I_, _ }},
-			},
-			{
-				{{_ , _ , _ , _ },
-				 {_ , _ , _ , _ },
-				 {I_, I_, I_, I_},
-				 {_ , _ , _ , _ }},
-			},
-			{
-				{{_ , I_, _ , _ },
-				 {_ , I_, _ , _ },
-				 {_ , I_, _ , _ },
-				 {_ , I_, _ , _ }},
-			}
-		} }
-	);
 }

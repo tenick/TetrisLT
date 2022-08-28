@@ -1,16 +1,21 @@
-#pragma once
+#ifndef J_H
+#define J_H
+
 #include "TetrominoBase.hpp"
+#include "../RotationSystem/RotationSystemBase.hpp"
 
 namespace Tetromino {
 	class J : public TetrominoBase {
 	public:
-		J(int startingRowOffset = 0, int startingColumnOffset = 3,
+		J(RotationSystem::RotationSystemBase*& rsBase,
+		  int startingRowOffset = 0, int startingColumnOffset = 3,
 		  int initialState = 0);
 
 		virtual TetrominoEnum GetTetrominoEnumEquivalent() const override;
 		virtual const std::vector<std::vector<std::vector<TetrominoEnum>>>& GetRotationStates() const override;
 
 		const static TetrominoEnum TetrominoEnumEquivalent;
-		const static std::vector<std::vector<std::vector<TetrominoEnum>>> RotationStates;
 	};
 }
+
+#endif

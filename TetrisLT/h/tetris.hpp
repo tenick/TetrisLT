@@ -1,9 +1,12 @@
-#pragma once
+#ifndef TETRIS_H
+#define TETRIS_H
+
+#include "Tetromino/TetrominoEnum.hpp"
+#include "Tetromino/TetrominoHandler.hpp"
 
 #include <SDL.h>
+
 #include <vector>
-#include "../h/Tetromino/TetrominoBase.hpp"
-#include "../h/Tetromino/TetrominoHandler.hpp"
 
 class Tetris {
 public:
@@ -12,7 +15,6 @@ public:
 	void Update();
 	void OnWindowEvent();
 	void Render();
-
 private:
 	void UpdateViewportByWindowSize();
 
@@ -23,11 +25,13 @@ private:
 	const int COLUMNS;
 	const int VANISHZONEHEIGHT;
 
-	std::vector<std::vector<TetrominoEnum>> BoardState;
+	std::vector<std::vector<Tetromino::TetrominoEnum>> BoardState;
 
-	TetrominoHandler tetrominoHandler;
+	Tetromino::TetrominoHandler tetrominoHandler;
 
 	SDL_Rect boardViewport;
 	SDL_Rect swapViewport;
 	SDL_Rect next5Viewport;
 };
+
+#endif

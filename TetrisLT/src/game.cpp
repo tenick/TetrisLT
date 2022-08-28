@@ -1,12 +1,14 @@
 #include "../h/game.hpp"
+
 #include "../h/tetris.hpp"
+
 #include <iostream>
 
 Game::Game()
 {
     SDL_Init(SDL_INIT_VIDEO);
 
-    this->window = SDL_CreateWindow("Tetris SDL2",
+    this->window = SDL_CreateWindow("TetrisL2",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         SCREEN_WIDTH, SCREEN_HEIGHT,
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);

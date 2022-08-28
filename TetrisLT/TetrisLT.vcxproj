@@ -151,6 +151,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\Randomizer\BagOf7.cpp" />
     <ClCompile Include="src\Randomizer\RandomizerBase.cpp" />
+    <ClCompile Include="src\RotationSystem\Original.cpp" />
+    <ClCompile Include="src\RotationSystem\RotationSystemBase.cpp" />
+    <ClCompile Include="src\RotationSystem\SRS.cpp" />
     <ClCompile Include="src\tetris.cpp" />
     <ClCompile Include="src\Tetromino\I.cpp" />
     <ClCompile Include="src\Tetromino\J.cpp" />
@@ -160,11 +163,16 @@
     <ClCompile Include="src\Tetromino\T.cpp" />
     <ClCompile Include="src\Tetromino\TetrominoBase.cpp" />
     <ClCompile Include="src\Tetromino\TetrominoHandler.cpp" />
+    <ClCompile Include="src\Tetromino\TetrominoHelpers.cpp" />
     <ClCompile Include="src\Tetromino\Z.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp" />
     <ClInclude Include="h\Randomizer\BagOf7.hpp" />
+    <ClInclude Include="h\RotationSystem\Original.hpp" />
+    <ClInclude Include="h\RotationSystem\RotationSystemBase.hpp" />
+    <ClInclude Include="h\RotationSystem\RotationSystemEnum.hpp" />
+    <ClInclude Include="h\RotationSystem\SRS.hpp" />
     <ClInclude Include="h\tetris.hpp" />
     <ClInclude Include="h\Tetromino\I.hpp" />
     <ClInclude Include="h\Tetromino\J.hpp" />
@@ -173,7 +181,11 @@
     <ClInclude Include="h\Tetromino\S.hpp" />
     <ClInclude Include="h\Tetromino\T.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoBase.hpp" />
+    <ClInclude Include="h\Tetromino\TetrominoEnum.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoHandler.hpp" />
+    <ClInclude Include="h\Tetromino\TetrominoHelpers.hpp" />
+    <ClInclude Include="h\Tetromino\TetrominoMoveEnum.hpp" />
+    <ClInclude Include="h\Tetromino\TetrominoRotationEnum.hpp" />
     <ClInclude Include="h\Tetromino\Z.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

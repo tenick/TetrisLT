@@ -1,16 +1,29 @@
-#pragma once
+#ifndef TETROMINO_HANDLER_H
+#define TETROMINO_HANDLER_H
 
 #include "../Randomizer/RandomizerBase.hpp"
 #include "../Randomizer/BagOf7.hpp"
+#include "../RotationSystem/SRS.hpp"
 #include "TetrominoBase.hpp"
+#include "TetrominoEnum.hpp"
+#include "TetrominoMoveEnum.hpp"
+#include "TetrominoRotationEnum.hpp"
+
 #include <SDL.h>
+
+using namespace Randomizer;
+using namespace RotationSystem;
 
 namespace Tetromino {
 	class TetrominoHandler {
 	public:
 		TetrominoHandler() = delete;
 		TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState,
-						 Randomizer::RandomizerBase* randomizer = new Randomizer::BagOf7());
+						 RandomizerBase* randomizer = new BagOf7(),
+						 RotationSystemBase* rotationSystemBase = new SRS());
+		
+		TetrominoBase* EnumToTetromino(TetrominoEnum tetrEnum);
+		
 		bool Move(TetrominoMoveEnum moveDir);
 		bool Rotate(TetrominoRotationEnum rotateDir);
 		void Lock();
@@ -18,7 +31,10 @@ namespace Tetromino {
 		void Update();
 		TetrominoEnum GetHoldTetromino();
 		TetrominoBase* GetCurrentTetromino();
-		const std::array<const TetrominoBase*, 5> PeekNext5Tetrominos();
+
+		RotationSystemEnum GetRotationSystemEnumEquivalent();
+
+		const std::array<TetrominoEnum, 5> PeekNext5Tetrominos();
 		~TetrominoHandler();
 	private:
 		// helpers
@@ -30,11 +46,15 @@ namespace Tetromino {
 		std::vector<std::vector<TetrominoEnum>>& BoardState;
 		const int BoardHeight;
 		const int BoardWidth;
+		
+		// rotation system
+		RotationSystemBase* rotationSystem;
 
+		// randomizer
+		RandomizerBase* randomizer;
 
 		TetrominoBase* currentTetromino = nullptr;
 		TetrominoEnum holdTetromino = _;
-		Randomizer::RandomizerBase* randomizer;
 
 		// settings
 		int DAS = 120; // Delayed Auto Shift (ms)
@@ -82,3 +102,5 @@ namespace Tetromino {
 		bool on180Rotate = false;
 	};
 }
+
+#endif

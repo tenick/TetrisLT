@@ -1,9 +1,10 @@
 #include "../../h/Tetromino/J.hpp"
 
 namespace Tetromino {
-	J::J(int startingRowOffset, int startingColumnOffset,
-		int initialState)
-		: TetrominoBase(startingRowOffset, startingColumnOffset, initialState)
+	J::J(RotationSystem::RotationSystemBase*& rsBase, 
+		 int startingRowOffset, int startingColumnOffset,
+		 int initialState)
+		: TetrominoBase(rsBase, startingRowOffset, startingColumnOffset, initialState)
 	{
 	}
 
@@ -11,32 +12,8 @@ namespace Tetromino {
 		return J::TetrominoEnumEquivalent;
 	}
 	const std::vector<std::vector<std::vector<TetrominoEnum>>>& J::GetRotationStates() const {
-		return J::RotationStates;
+		return this->rotationSystem->GetTetrominoRotationStates().at(this->GetTetrominoEnumEquivalent());
 	};
 
 	const TetrominoEnum J::TetrominoEnumEquivalent(J_);
-	const std::vector<std::vector<std::vector<TetrominoEnum>>> J::RotationStates(
-		{ {
-			{
-				{{J_, _ , _ },
-				 {J_, J_, J_},
-				 {_ , _ , _ }}
-			},
-			{
-				{{_ , J_, J_},
-				 {_ , J_, _ },
-				 {_ , J_, _ }}
-			},
-			{
-				{{_ , _ , _ },
-				 {J_, J_, J_},
-				 {_ , _ , J_}}
-			},
-			{
-				{{_ , J_, _ },
-				 {_ , J_, _ },
-				 {J_, J_, _ }}
-			}
-		} }
-	);
 }

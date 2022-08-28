@@ -1,12 +1,49 @@
 #include "../../h/Tetromino/TetrominoHandler.hpp"
-#include <iostream>
+
+#include "../../h/Tetromino/I.hpp"
+#include "../../h/Tetromino/J.hpp"
+#include "../../h/Tetromino/L.hpp"
+#include "../../h/Tetromino/O.hpp"
+#include "../../h/Tetromino/S.hpp"
+#include "../../h/Tetromino/T.hpp"
+#include "../../h/Tetromino/Z.hpp"
+#include "../../h/Tetromino/TetrominoHelpers.hpp"
+
+#include "SDL.h"
 
 namespace Tetromino {
 	TetrominoHandler::TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState, 
-									   Randomizer::RandomizerBase* randomizer)
-		: BoardState(boardState), randomizer(randomizer), currentTetromino(randomizer->Next()),
-		  BoardHeight(boardState.size()), BoardWidth(boardState[0].size())
+									   Randomizer::RandomizerBase* randomizer,
+									   RotationSystem::RotationSystemBase* rotationSystemBase)
+		: BoardState(boardState),
+		  BoardHeight(boardState.size()), BoardWidth(boardState[0].size()),
+		  randomizer(randomizer),
+		  rotationSystem(rotationSystemBase),
+		  currentTetromino(EnumToTetromino(randomizer->Next()))
 	{
+	}
+
+	TetrominoBase* TetrominoHandler::EnumToTetromino(TetrominoEnum tetrEnum) {
+		switch (tetrEnum) {
+		case I_:
+			return new I(this->rotationSystem);
+		case J_:
+			return new J(this->rotationSystem);
+		case L_:
+			return new L(this->rotationSystem);
+		case O_:
+			return new O(this->rotationSystem);
+		case S_:
+			return new S(this->rotationSystem);
+		case T_:
+			return new T(this->rotationSystem);
+		case Z_:
+			return new Z(this->rotationSystem);
+		}
+	}
+
+	RotationSystem::RotationSystemEnum TetrominoHandler::GetRotationSystemEnumEquivalent() {
+		return this->rotationSystem->GetRotationSystemEnumEquivalent();
 	}
 
 	void TetrominoHandler::Lock() {
@@ -74,7 +111,7 @@ namespace Tetromino {
 		// timer
 		static int gravityStartTime = SDL_GetTicks64();
 
-		// TODO: wall kick mechanism (SRS)
+		// TODO: fix infinity bug
 		// TODO: be able to set piece starting position (add left-handed/right-handed option)
 		// TODO: Loss conditions
 		// TODO: Reset button
@@ -143,7 +180,7 @@ namespace Tetromino {
 			if (this->holdTetromino == _) { // no hold yet
 				this->holdTetromino = this->currentTetromino->GetTetrominoEnumEquivalent();
 				delete this->currentTetromino;
-				this->currentTetromino = this->randomizer->Next();
+				this->currentTetromino = EnumToTetromino(this->randomizer->Next());
 				this->currentHold++;
 
 				this->ResetLock();
@@ -284,31 +321,12 @@ namespace Tetromino {
 	}
 
 	bool TetrominoHandler::Rotate(TetrominoRotationEnum rotateDir) {
-		int resultingStateIndex = this->currentTetromino->GetCurrentRotationStateIndex();
-		switch (rotateDir) {
-			case R_CW:
-				resultingStateIndex++;
-				break;
-			case R_CCW:
-				resultingStateIndex--;
-				break;
-			case R_180:
-				resultingStateIndex += 2;
-				break;
-		}
-
-		bool canMove = CanMove(this->BoardState,
-							   this->currentTetromino->GetRotationStateAt(resultingStateIndex),
-							   this->currentTetromino->ColumnOffset,
-							   this->currentTetromino->RowOffset);
-		if (canMove)
-			this->currentTetromino->SetCurrentRotationStateIndex(resultingStateIndex);
-		return canMove;
+		return this->rotationSystem->Rotate(this->BoardState, this->currentTetromino, rotateDir);
 	}
 
 	void TetrominoHandler::Next() {
 		delete this->currentTetromino;
-		this->currentTetromino = this->randomizer->Next();
+		this->currentTetromino = EnumToTetromino(this->randomizer->Next());
 	}
 
 	TetrominoEnum TetrominoHandler::GetHoldTetromino() {
@@ -319,7 +337,7 @@ namespace Tetromino {
 		return this->currentTetromino;
 	}
 
-	const std::array<const TetrominoBase*, 5> TetrominoHandler::PeekNext5Tetrominos() {
+	const std::array<TetrominoEnum, 5> TetrominoHandler::PeekNext5Tetrominos() {
 		return this->randomizer->PeekNext5();
 	}
 

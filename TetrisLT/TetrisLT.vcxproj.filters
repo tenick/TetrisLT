@@ -60,6 +60,18 @@
     <ClCompile Include="src\Tetromino\Z.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\RotationSystem\RotationSystemBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RotationSystem\SRS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tetromino\TetrominoHelpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\RotationSystem\Original.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp">
@@ -96,6 +108,30 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\Tetromino\Z.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\RotationSystem\SRS.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\RotationSystem\RotationSystemBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\Tetromino\TetrominoEnum.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\Tetromino\TetrominoMoveEnum.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\Tetromino\TetrominoRotationEnum.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\RotationSystem\RotationSystemEnum.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\Tetromino\TetrominoHelpers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\RotationSystem\Original.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -5,7 +5,7 @@ namespace Randomizer {
 		this->refillQueue();
 	}
 
-	TetrominoBase* BagOf7::Next() {
+	TetrominoEnum BagOf7::Next() {
 		auto front = this->tetrominoQueue.front();
 		this->tetrominoQueue.pop();
 
@@ -15,9 +15,9 @@ namespace Randomizer {
 		return front;
 	}
 
-	const std::array<const TetrominoBase*, 5> BagOf7::PeekNext5() {
-		auto queueCopy = this->tetrominoQueue;
-		std::array<const TetrominoBase*, 5> arr;
+	const std::array<TetrominoEnum, 5> BagOf7::PeekNext5() {
+		std::queue<TetrominoEnum> queueCopy = this->tetrominoQueue;
+		std::array<TetrominoEnum, 5> arr;
 		for (int i = 0; i < 5; i++) {
 			arr[i] = queueCopy.front();
 			queueCopy.pop();
@@ -29,6 +29,6 @@ namespace Randomizer {
 	void BagOf7::refillQueue() {
 		std::random_shuffle(std::begin(this->bag), std::end(this->bag));
 		for (TetrominoEnum tetrEnum : this->bag)
-			tetrominoQueue.push(EnumToTetromino(tetrEnum));
+			tetrominoQueue.push(tetrEnum);
 	}
 }
