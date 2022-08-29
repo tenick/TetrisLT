@@ -186,6 +186,7 @@
     <ClInclude Include="h\Tetromino\TetrominoHelpers.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoMoveEnum.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoRotationEnum.hpp" />
+    <ClInclude Include="h\Tetromino\TopOutConditionsEnum.hpp" />
     <ClInclude Include="h\Tetromino\Z.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

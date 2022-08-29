@@ -29,7 +29,7 @@ namespace Tetromino {
 		void Next();
 		void Update();
 		TetrominoEnum GetHoldTetromino();
-		TetrominoBase* GetCurrentTetromino();
+		TetrominoBase*& GetCurrentTetromino();
 
 		RotationSystemEnum GetRotationSystemEnumEquivalent();
 

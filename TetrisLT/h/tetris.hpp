@@ -36,6 +36,7 @@ private:
 
 	Tetromino::TetrominoHandler* tetrominoHandler;
 
+	SDL_Rect playfieldViewport;
 	SDL_Rect boardViewport;
 	SDL_Rect swapViewport;
 	SDL_Rect next5Viewport;

@@ -23,7 +23,6 @@ void Tetris::UpdateViewportByWindowSize() {
 	SDL_GetWindowSize(this->windowContext, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 	SDL_SetWindowMinimumSize(this->windowContext, SCREEN_HEIGHT / 3 + SCREEN_HEIGHT / 2, 100);
 
-
 	this->boardViewport.w = SCREEN_HEIGHT / 2;
 	this->boardViewport.h = SCREEN_HEIGHT;
 	this->boardViewport.x = SCREEN_WIDTH / 2 - this->boardViewport.w / 2;
@@ -124,8 +123,7 @@ void Tetris::Render() {
 	}*/
 
 	// draw current tetromino
-	SDL_SetRenderDrawColor(this->renderContext, (uint8_t)0xFF, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0xFF);
-	TetrominoBase* currentTetromino = this->tetrominoHandler->GetCurrentTetromino();
+	TetrominoBase*& currentTetromino = this->tetrominoHandler->GetCurrentTetromino();
 	int currentColumnOffset = currentTetromino->ColumnOffset;
 	int currentRowOffset = currentTetromino->RowOffset;
 	auto& currentTetrominoState = currentTetromino->GetCurrentRotationState();
@@ -149,7 +147,9 @@ void Tetris::Render() {
 
 	
 
-	// draw current tetromino shadow
+	// draw current tetromino ghost piece
+	SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(this->renderContext, r * .7, g * .7, b * .7, 0xBB);
 	int resultingRowOffset = currentRowOffset;
 	while (CanMove(this->BoardState, currentTetrominoState, currentColumnOffset, resultingRowOffset + 1)) {
 		resultingRowOffset++;
@@ -166,6 +166,7 @@ void Tetris::Render() {
 		}
 	}
 
+	SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_NONE);
 
 	// draw swap viewport
 	TetrominoEnum holdTetromino = this->tetrominoHandler->GetHoldTetromino();

@@ -143,7 +143,7 @@ namespace Tetromino {
 
 			gravityStartTime = SDL_GetTicks64();
 		}
-
+	
 		// harddrop input
 		if (currentKeyStates[this->HardDrop])
 		{
@@ -314,8 +314,6 @@ namespace Tetromino {
 			this->currentRightDAS = 0;
 			this->currentRightARR = 0;
 		}
-
-
 	}
 
 	bool TetrominoHandler::Move(TetrominoMoveEnum moveDir) {
@@ -362,7 +360,7 @@ namespace Tetromino {
 		return this->holdTetromino;
 	}
 
-	TetrominoBase* TetrominoHandler::GetCurrentTetromino() {
+	TetrominoBase*& TetrominoHandler::GetCurrentTetromino() {
 		return this->currentTetromino;
 	}
 
