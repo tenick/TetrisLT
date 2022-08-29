@@ -85,6 +85,7 @@ namespace Tetromino {
 
 		this->Next();
 		this->currentHold = 0;
+		this->highestRowOffsetReached = 0;
 	}
 
 	void TetrominoHandler::ResetLock() {
@@ -99,8 +100,13 @@ namespace Tetromino {
 		}
 	}
 
-	void TetrominoHandler::ResetLockDelay(int increment) {
-		this->currentLockReset += increment;
+	void TetrominoHandler::ResetLockDelay() {
+		if (!CanMove(this->BoardState, 
+					this->currentTetromino->GetCurrentRotationState(),
+					this->currentTetromino->ColumnOffset, 
+					this->currentTetromino->RowOffset + 1)) // piece can't move down, meaning it's sitting on pieces/floor
+			this->currentLockReset++;
+
 		if (this->currentLockReset >= this->LockDelayResetLimit) {
 			this->Lock();
 			this->ResetLock();
@@ -115,7 +121,6 @@ namespace Tetromino {
 		// timer
 		static int gravityStartTime = SDL_GetTicks64();
 
-
 		// TODO: Loss conditions
 		// TODO: Reset button
 		// TODO: Scoring
@@ -123,13 +128,19 @@ namespace Tetromino {
 		// TODO: UI
 		// TODO: Multiplayer
 
-
 		// gravity
 		if (SDL_GetTicks64() - gravityStartTime >= this->Gravity) {
 			if (!this->Move(M_D))
 				this->StartLockDelay();
-			else
-				this->ResetLockDelay(0);
+			else {
+				if (this->currentTetromino->RowOffset <= this->highestRowOffsetReached)
+					this->ResetLockDelay();
+			}
+
+			if (this->currentTetromino->RowOffset > this->highestRowOffsetReached) {
+				this->ResetLock();
+				this->highestRowOffsetReached = this->currentTetromino->RowOffset;
+			}
 
 			gravityStartTime = SDL_GetTicks64();
 		}
@@ -153,14 +164,32 @@ namespace Tetromino {
 			if (!this->SDSActivated) {
 				if (!this->Move(M_D))
 					this->StartLockDelay();
-				else
-					this->ResetLockDelay(0);
+				else {
+					if (this->currentTetromino->RowOffset <= this->highestRowOffsetReached)
+						this->ResetLockDelay();
+				}
+
+				if (this->currentTetromino->RowOffset > this->highestRowOffsetReached) {
+					this->ResetLock();
+					this->highestRowOffsetReached = this->currentTetromino->RowOffset;
+				}
 
 				this->currentSDS = SDL_GetTicks64();
 				this->SDSActivated = true;
 			}
 			else if (this->SDSActivated && SDL_GetTicks64() - this->currentSDS >= this->SDS) {
-				this->Move(M_D);
+				if (!this->Move(M_D))
+					this->StartLockDelay();
+				else {
+					if (this->currentTetromino->RowOffset <= this->highestRowOffsetReached)
+						this->ResetLockDelay();
+				}
+
+				if (this->currentTetromino->RowOffset > this->highestRowOffsetReached) {
+					this->ResetLock();
+					this->highestRowOffsetReached = this->currentTetromino->RowOffset;
+				}
+
 				this->currentSDS = SDL_GetTicks64();
 			}
 		}

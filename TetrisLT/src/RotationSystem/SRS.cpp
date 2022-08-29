@@ -38,7 +38,6 @@ namespace RotationSystem {
 				return true;
 			}
 		}
-		
 		return false;
 	}
 
