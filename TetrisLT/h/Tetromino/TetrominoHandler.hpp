@@ -17,11 +17,10 @@ using namespace RotationSystem;
 namespace Tetromino {
 	class TetrominoHandler {
 	public:
-		TetrominoHandler() = delete;
 		TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState,
 						 RandomizerBase* randomizer = new BagOf7(),
 						 RotationSystemBase* rotationSystemBase = new SRS());
-		
+
 		TetrominoBase* EnumToTetromino(TetrominoEnum tetrEnum);
 		
 		bool Move(TetrominoMoveEnum moveDir);

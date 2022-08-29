@@ -9,7 +9,7 @@ Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int row
 	COLUMNS(columns),
 	VANISHZONEHEIGHT(vanishZoneHeight),
 	BoardState(std::vector<std::vector<TetrominoEnum>>(rows + vanishZoneHeight, std::vector<TetrominoEnum>(columns, _))),
-	tetrominoHandler(TetrominoHandler(BoardState))
+	tetrominoHandler(new TetrominoHandler(BoardState))
 {
 }
 
@@ -40,8 +40,35 @@ void Tetris::UpdateViewportByWindowSize() {
 	this->next5Viewport.y = SCREEN_HEIGHT / 6;
 }
 
+void Tetris::Reset() {
+	delete this->tetrominoHandler;
+
+	// clear renderer
+	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
+	SDL_RenderClear(this->renderContext);
+
+	// clear board
+	for (int r = 0; r < this->ROWS; r++) {
+		for (int c = 0; c < this->COLUMNS; c++) {
+			this->BoardState[r][c] = _;
+		}
+	}
+	this->tetrominoHandler = new TetrominoHandler(this->BoardState);
+}
+
 void Tetris::Update() {
-	this->tetrominoHandler.Update();
+	// handle keyboard
+	static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
+
+	if (currentKeyStates[this->ResetKey]) {
+		if (!this->onReset) {
+			Reset();
+			this->onReset = true;
+		}
+	}
+	else this->onReset = false;
+
+	this->tetrominoHandler->Update();
 }
 
 void Tetris::Render() {
@@ -83,22 +110,22 @@ void Tetris::Render() {
 		}
 	}
 
-	//// draw board lines
-	//SDL_SetRenderDrawColor(this->renderContext, 0xFF, 0xFF, 0xFF, 0xFF);
-	//float cellHeight = (float)this->boardViewport.h / this->ROWS;
-	//float cellWidth = (float)this->boardViewport.w / this->COLUMNS;
-	//for (int i = 1; i < this->ROWS; i++) {
-	//	float currY = i * cellHeight;
-	//	SDL_RenderDrawLineF(this->renderContext, 0, currY, this->boardViewport.w, currY);
-	//}
-	//for (int i = 1; i < this->COLUMNS; i++) {
-	//	float currX = i * cellWidth;
-	//	SDL_RenderDrawLineF(this->renderContext, currX, 0, currX, this->boardViewport.h);
-	//}
+	// draw board lines
+	/*SDL_SetRenderDrawColor(this->renderContext, 0x88, 0x88, 0x88, 0xFF);
+	float cellHeight = (float)this->boardViewport.h / this->ROWS;
+	float cellWidth = (float)this->boardViewport.w / this->COLUMNS;
+	for (int i = 1; i < this->ROWS; i++) {
+		float currY = i * cellHeight;
+		SDL_RenderDrawLineF(this->renderContext, 0, currY, this->boardViewport.w, currY);
+	}
+	for (int i = 1; i < this->COLUMNS; i++) {
+		float currX = i * cellWidth;
+		SDL_RenderDrawLineF(this->renderContext, currX, 0, currX, this->boardViewport.h);
+	}*/
 
 	// draw current tetromino
 	SDL_SetRenderDrawColor(this->renderContext, (uint8_t)0xFF, (uint8_t)0x00, (uint8_t)0x00, (uint8_t)0xFF);
-	TetrominoBase* currentTetromino = this->tetrominoHandler.GetCurrentTetromino();
+	TetrominoBase* currentTetromino = this->tetrominoHandler->GetCurrentTetromino();
 	int currentColumnOffset = currentTetromino->ColumnOffset;
 	int currentRowOffset = currentTetromino->RowOffset;
 	auto& currentTetrominoState = currentTetromino->GetCurrentRotationState();
@@ -141,7 +168,7 @@ void Tetris::Render() {
 
 
 	// draw swap viewport
-	TetrominoEnum holdTetromino = this->tetrominoHandler.GetHoldTetromino();
+	TetrominoEnum holdTetromino = this->tetrominoHandler->GetHoldTetromino();
 	SDL_FRect viewportRect{};
 	if (holdTetromino != _) {
 		SDL_RenderSetViewport(this->renderContext, &this->swapViewport);
@@ -156,7 +183,7 @@ void Tetris::Render() {
 		Tetromino::EnumToRGBA(holdTetromino, r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
-		auto& holdTetrominoState = EnumToRotationStates(this->tetrominoHandler.GetRotationSystemEnumEquivalent(), holdTetromino)[0];
+		auto& holdTetrominoState = EnumToRotationStates(this->tetrominoHandler->GetRotationSystemEnumEquivalent(), holdTetromino)[0];
 
 		cellRect.w = this->swapViewport.w / holdTetrominoState[0].size();
 		cellRect.h = this->swapViewport.h / holdTetrominoState.size();
@@ -184,7 +211,7 @@ void Tetris::Render() {
 	SDL_SetRenderDrawColor(this->renderContext, 0, 0, 0, 0);
 	SDL_RenderFillRectF(this->renderContext, &viewportRect);
 
-	auto next5Tetrominos = this->tetrominoHandler.PeekNext5Tetrominos();
+	auto next5Tetrominos = this->tetrominoHandler->PeekNext5Tetrominos();
 
 	cellRect.w = this->next5Viewport.w;
 	cellRect.h = this->next5Viewport.h / 5;
@@ -193,7 +220,7 @@ void Tetris::Render() {
 		Tetromino::EnumToRGBA(next5Tetrominos[i], r, g, b, a);
 		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 
-		auto& tetrominoState = EnumToRotationStates(this->tetrominoHandler.GetRotationSystemEnumEquivalent(), next5Tetrominos[i])[0];
+		auto& tetrominoState = EnumToRotationStates(this->tetrominoHandler->GetRotationSystemEnumEquivalent(), next5Tetrominos[i])[0];
 
 		cellRect.w = this->next5Viewport.w / tetrominoState[0].size();
 		cellRect.h = this->next5Viewport.h / tetrominoState.size() / 5;

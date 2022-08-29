@@ -122,7 +122,6 @@ namespace Tetromino {
 		static int gravityStartTime = SDL_GetTicks64();
 
 		// TODO: Loss conditions
-		// TODO: Reset button
 		// TODO: Scoring
 		// TODO: Skin customization
 		// TODO: UI
