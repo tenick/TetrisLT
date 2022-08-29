@@ -121,6 +121,7 @@ namespace Tetromino {
 		// timer
 		static int gravityStartTime = SDL_GetTicks64();
 
+		// TODO: fix bug when piece kicked above vanishing zone
 		// TODO: Loss conditions
 		// TODO: Scoring
 		// TODO: Skin customization
