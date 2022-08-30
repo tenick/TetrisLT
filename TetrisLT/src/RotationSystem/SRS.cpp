@@ -27,13 +27,15 @@ namespace RotationSystem {
 		auto& resultingRotationState = tetromino->GetRotationStateAt(resultingRotationStateIndex);
 
 		for (const auto& test : tests) {
+			int newColOffset = tetromino->ColumnOffset + test.first;
+			int newRowOffset = tetromino->RowOffset + (test.second * -1); // * -1 because wall kick translation in y is positive upwards and negative downwards, but std::vectors are the opposite
 			bool canMove = CanMove(BoardState,
 				resultingRotationState,
-				tetromino->ColumnOffset + test.first,
-				tetromino->RowOffset + (test.second * -1)); // * -1 because wall kick translation in y is positive upwards and negative downwards
+				newColOffset,
+				newRowOffset); 
 			if (canMove) {
-				tetromino->ColumnOffset += test.first;
-				tetromino->RowOffset += (test.second * -1);
+				tetromino->ColumnOffset = newColOffset;
+				tetromino->RowOffset = newRowOffset;
 				tetromino->SetCurrentRotationStateIndex(resultingRotationStateIndex);
 				return true;
 			}

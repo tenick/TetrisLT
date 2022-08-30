@@ -10,7 +10,7 @@
 
 class Tetris {
 public:
-	Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows = 20, int columns = 10, int vanishZoneHeight=4);
+	Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows = 1, int columns = 4, int vanishZoneHeight=4);
 
 	void Update();
 	void Reset();

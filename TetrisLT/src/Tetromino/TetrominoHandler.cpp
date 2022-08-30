@@ -24,21 +24,23 @@ namespace Tetromino {
 	}
 
 	TetrominoBase* TetrominoHandler::EnumToTetromino(TetrominoEnum tetrEnum) {
+		auto& rotationStates = this->rotationSystem->GetTetrominoRotationStates().at(tetrEnum);
+		int pieceColumnSpawn = (this->BoardWidth - rotationStates[0][0].size()) / 2;
 		switch (tetrEnum) {
 		case I_:
-			return new I(this->rotationSystem);
+			return new I(this->rotationSystem, 0, pieceColumnSpawn);
 		case J_:
-			return new J(this->rotationSystem);
+			return new J(this->rotationSystem, 0, pieceColumnSpawn);
 		case L_:
-			return new L(this->rotationSystem);
+			return new L(this->rotationSystem, 0, pieceColumnSpawn);
 		case O_:
-			return new O(this->rotationSystem);
+			return new O(this->rotationSystem, 0, pieceColumnSpawn);
 		case S_:
-			return new S(this->rotationSystem);
+			return new S(this->rotationSystem, 0, pieceColumnSpawn);
 		case T_:
-			return new T(this->rotationSystem);
+			return new T(this->rotationSystem, 0, pieceColumnSpawn);
 		case Z_:
-			return new Z(this->rotationSystem);
+			return new Z(this->rotationSystem, 0, pieceColumnSpawn);
 		}
 	}
 
@@ -121,7 +123,6 @@ namespace Tetromino {
 		// timer
 		static int gravityStartTime = SDL_GetTicks64();
 
-		// TODO: fix bug when piece kicked above vanishing zone
 		// TODO: Loss conditions
 		// TODO: Scoring
 		// TODO: Skin customization

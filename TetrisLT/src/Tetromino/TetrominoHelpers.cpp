@@ -55,7 +55,7 @@ namespace Tetromino {
 			for (int r = 0; r < tetrominoState.size(); r++) {
 				int boardR = newRowOffset + r;
 
-				if (boardC < 0 || boardC >= boardWidth || boardR >= boardHeight) { // means piece array is reaching outside of board
+				if (boardC < 0 || boardR < 0 || boardC >= boardWidth || boardR >= boardHeight) { // means piece array is reaching outside of board
 					// check if any piece is outside the board, can't move
 					if (tetrominoState[r][c] != _)
 						return false;
