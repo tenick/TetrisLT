@@ -123,11 +123,11 @@ namespace Tetromino {
 		// timer
 		static int gravityStartTime = SDL_GetTicks64();
 
+		// TODO: UI
+		// TODO: Multiplayer
 		// TODO: Loss conditions
 		// TODO: Scoring
 		// TODO: Skin customization
-		// TODO: UI
-		// TODO: Multiplayer
 
 		// gravity
 		if (SDL_GetTicks64() - gravityStartTime >= this->Gravity) {
