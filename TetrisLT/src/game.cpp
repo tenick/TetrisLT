@@ -19,7 +19,10 @@ Game::Game()
     this->tetris = new Tetris(this->window, this->renderer);
     this->mult = new Multiplayer(this->window, this->tetris,
         {new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer), 
-        new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer)});
+         new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
+         new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
+         new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
+         new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer)});
 }
 
 void Game::Start() {

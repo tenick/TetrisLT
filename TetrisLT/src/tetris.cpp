@@ -65,6 +65,7 @@ void Tetris::Update() {
 	// handle keyboard
 	static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
+	// check if user resets
 	if (currentKeyStates[this->ResetKey]) {
 		if (!this->onReset) {
 			Reset();

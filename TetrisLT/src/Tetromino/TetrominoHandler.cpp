@@ -21,6 +21,7 @@ namespace Tetromino {
 		  rotationSystem(rotationSystemBase),
 		  currentTetromino(EnumToTetromino(randomizer->Next()))
 	{
+		gravityStartTime = SDL_GetTicks64();
 	}
 
 	TetrominoBase* TetrominoHandler::EnumToTetromino(TetrominoEnum tetrEnum) {
@@ -121,7 +122,6 @@ namespace Tetromino {
 		// handle keyboard
 		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 		// timer
-		static int gravityStartTime = SDL_GetTicks64();
 
 		// TODO: UI
 		// TODO: Multiplayer

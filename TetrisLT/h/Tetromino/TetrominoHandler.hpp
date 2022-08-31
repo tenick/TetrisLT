@@ -75,6 +75,8 @@ namespace Tetromino {
 		// states
 		bool onHarddrop = false;
 
+		int gravityStartTime = 0;
+
 		bool SDSActivated = false;
 		int currentSDS = 0;
 
