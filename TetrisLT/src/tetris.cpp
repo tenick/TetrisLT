@@ -17,6 +17,10 @@ void Tetris::OnWindowEvent() {
 	this->UpdateViewportByWindowSize();
 }
 
+void Tetris::SetViewport(SDL_Rect newViewport) {
+	this->playfieldViewport = newViewport;
+}
+
 void Tetris::UpdateViewportByWindowSize() {
 	int SCREEN_WIDTH;
 	int SCREEN_HEIGHT;

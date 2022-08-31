@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <string>
 #include "tetris.hpp"
+#include "UI/Multiplayer.hpp"
 
 class Game {
 public:
@@ -16,6 +17,8 @@ private:
     void drawQuad(const SDL_Rect& fillRect);
 
     Tetris* tetris = NULL;
+
+    Multiplayer* mult = nullptr;
 
     //Screen dimension constants
     int SCREEN_WIDTH = 640;

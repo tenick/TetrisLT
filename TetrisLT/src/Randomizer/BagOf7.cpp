@@ -27,7 +27,7 @@ namespace Randomizer {
 
 	// TODO: calling EnumToTetromino might cause memory leak, because it's returning a new heap allocation, must delete that
 	void BagOf7::refillQueue() {
-		std::random_shuffle(std::begin(this->bag), std::end(this->bag));
+		std::shuffle(std::begin(this->bag), std::end(this->bag), this->RNG);
 		for (TetrominoEnum tetrEnum : this->bag)
 			tetrominoQueue.push(tetrEnum);
 	}

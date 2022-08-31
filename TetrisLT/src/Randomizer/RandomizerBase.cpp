@@ -8,6 +8,6 @@ namespace Randomizer {
 
 	void RandomizerBase::SetSeed(int seed) {
 		this->seed = seed;
-		srand(seed);
+		RNG.seed(seed);
 	}
 }

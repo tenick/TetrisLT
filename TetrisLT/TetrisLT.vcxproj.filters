@@ -72,6 +72,9 @@
     <ClCompile Include="src\RotationSystem\Original.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\UI\Multiplayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp">
@@ -135,6 +138,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\Tetromino\TopOutConditionsEnum.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\UI\Multiplayer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

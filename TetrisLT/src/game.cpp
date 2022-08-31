@@ -17,6 +17,9 @@ Game::Game()
     this->screenSurface = SDL_GetWindowSurface(this->window);
 
     this->tetris = new Tetris(this->window, this->renderer);
+    this->mult = new Multiplayer(this->window, this->tetris,
+        {new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer), 
+        new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer)});
 }
 
 void Game::Start() {
@@ -33,13 +36,16 @@ void Game::Start() {
                     this->quit = true;
                     break;
                 case SDL_WINDOWEVENT:
-                    this->tetris->OnWindowEvent();
+                    //this->tetris->OnWindowEvent();
+                    this->mult->OnWindowEvent();
                     break;
             }
         }
 
         // updating game states
-        this->tetris->Update();
+        //this->tetris->Update();
+
+        this->mult->Update();
 
         // framerate cap handling
         float timeElapsed = SDL_GetTicks64() - startTime;
@@ -51,7 +57,8 @@ void Game::Start() {
 
 
         // drawing frames
-        this->tetris->Render();
+        //this->tetris->Render();
+        this->mult->Render();
         SDL_RenderPresent(this->renderer);
 
         // logging

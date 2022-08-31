@@ -4,6 +4,7 @@
 #include "../Tetromino/TetrominoEnum.hpp"
 
 #include <array>
+#include <random>
 
 using namespace Tetromino;
 
@@ -16,6 +17,7 @@ namespace Randomizer {
 		void SetSeed(int seed);
 	protected:
 		int seed = 0;
+		std::minstd_rand RNG;
 	};
 }
 

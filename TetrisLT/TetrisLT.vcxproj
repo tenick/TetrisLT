@@ -165,6 +165,7 @@
     <ClCompile Include="src\Tetromino\TetrominoHandler.cpp" />
     <ClCompile Include="src\Tetromino\TetrominoHelpers.cpp" />
     <ClCompile Include="src\Tetromino\Z.cpp" />
+    <ClCompile Include="src\UI\Multiplayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp" />
@@ -188,6 +189,7 @@
     <ClInclude Include="h\Tetromino\TetrominoRotationEnum.hpp" />
     <ClInclude Include="h\Tetromino\TopOutConditionsEnum.hpp" />
     <ClInclude Include="h\Tetromino\Z.hpp" />
+    <ClInclude Include="h\UI\Multiplayer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

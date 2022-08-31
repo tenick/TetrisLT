@@ -16,6 +16,7 @@ public:
 	void Reset();
 	void OnWindowEvent();
 	void Render();
+	void SetViewport(SDL_Rect newViewport);
 private:
 	void UpdateViewportByWindowSize();
 
