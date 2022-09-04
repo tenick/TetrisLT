@@ -144,4 +144,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="fonts\Silkscreen-Bold.ttf" />
+    <Font Include="fonts\Silkscreen-Regular.ttf" />
+  </ItemGroup>
 </Project>

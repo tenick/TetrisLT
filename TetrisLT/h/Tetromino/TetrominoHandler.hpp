@@ -62,6 +62,7 @@ namespace Tetromino {
 		int Gravity = 500; // Automatic dropping speed (ms)
 		int LockDelay = 500; // Delay before locking tetromino in place (ms)
 		int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
+		int DelayAfterPieceLock = 100; // ms delay on piece lock (to prevent accidental hard drops)
 
 		SDL_Scancode MoveLeft = SDL_SCANCODE_LEFT;
 		SDL_Scancode MoveRight = SDL_SCANCODE_RIGHT;
@@ -73,7 +74,12 @@ namespace Tetromino {
 		SDL_Scancode Rotate180 = SDL_SCANCODE_D;
 
 		// states
+		bool isGhostEnabled = true;
+
 		bool onHarddrop = false;
+
+		bool isDelayingAfterPieceLock = false;
+		int delayAfterPieceLockStartTime = 0;
 
 		int gravityStartTime = 0;
 

@@ -89,6 +89,10 @@ namespace Tetromino {
 		this->Next();
 		this->currentHold = 0;
 		this->highestRowOffsetReached = 0;
+
+		// start delay after locking piece (preventing accidental hard drops)
+		this->isDelayingAfterPieceLock = true;
+		this->delayAfterPieceLockStartTime = SDL_GetTicks64();
 	}
 
 	void TetrominoHandler::ResetLock() {
@@ -121,7 +125,6 @@ namespace Tetromino {
 	void TetrominoHandler::Update() {
 		// handle keyboard
 		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-		// timer
 
 		// TODO: UI
 		// TODO: Multiplayer
@@ -149,10 +152,15 @@ namespace Tetromino {
 		// harddrop input
 		if (currentKeyStates[this->HardDrop])
 		{
-			if (!this->onHarddrop) {
+			if (this->isDelayingAfterPieceLock) {
+				if (SDL_GetTicks64() - this->delayAfterPieceLockStartTime >= this->DelayAfterPieceLock) {
+					this->isDelayingAfterPieceLock = false;
+				}
+			}
+			else if (!this->onHarddrop) {
 				this->Lock();
 				this->ResetLock();
-				
+
 				this->onHarddrop = true;
 			}
 		}

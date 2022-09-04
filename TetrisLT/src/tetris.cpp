@@ -2,6 +2,8 @@
 
 #include "../h/Tetromino/TetrominoHelpers.hpp"
 
+#include <iostream>
+
 Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows, int columns, int vanishZoneHeight) :
 	windowContext(windowContext),
 	renderContext(renderContext),
@@ -11,6 +13,10 @@ Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int row
 	BoardState(std::vector<std::vector<TetrominoEnum>>(rows + vanishZoneHeight, std::vector<TetrominoEnum>(columns, _))),
 	tetrominoHandler(new TetrominoHandler(BoardState))
 {
+	MainFont = TTF_OpenFont("fonts/Silkscreen-Regular.ttf", 28);
+	if (MainFont == NULL) {
+		std::cout << "error: " << TTF_GetError() << '\n';
+	}
 }
 
 void Tetris::OnWindowEvent() {
@@ -178,24 +184,26 @@ void Tetris::Render() {
 
 
 	// draw current tetromino ghost piece
-	SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_BLEND);
-	SDL_SetRenderDrawColor(this->renderContext, r * .7, g * .7, b * .7, 0xBB);
-	int resultingRowOffset = currentRowOffset;
-	while (CanMove(this->BoardState, currentTetrominoState, currentColumnOffset, resultingRowOffset + 1)) {
-		resultingRowOffset++;
-	}
-	for (int r = 0; r < currentTetrominoState.size(); r++) {
-		for (int c = 0; c < currentTetrominoState[0].size(); c++) {
-			TetrominoEnum currCell = currentTetrominoState[r][c];
+	if (this->isGhostPieceEnabled) {
+		SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(this->renderContext, r * .7, g * .7, b * .7, 0xBB);
+		int resultingRowOffset = currentRowOffset;
+		while (CanMove(this->BoardState, currentTetrominoState, currentColumnOffset, resultingRowOffset + 1)) {
+			resultingRowOffset++;
+		}
+		for (int r = 0; r < currentTetrominoState.size(); r++) {
+			for (int c = 0; c < currentTetrominoState[0].size(); c++) {
+				TetrominoEnum currCell = currentTetrominoState[r][c];
 
-			if (currCell != _) {
-				cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
-				cellRect.y = boardBG.y + boardXYPadding.y + (resultingRowOffset + r) * cellRect.h;
-				SDL_RenderFillRectF(this->renderContext, &cellRect);
+				if (currCell != _) {
+					cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
+					cellRect.y = boardBG.y + boardXYPadding.y + (resultingRowOffset + r) * cellRect.h;
+					SDL_RenderFillRectF(this->renderContext, &cellRect);
+				}
 			}
 		}
+		SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_NONE);
 	}
-	SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_NONE);
 
 
 	// draw hold piece area
@@ -216,16 +224,13 @@ void Tetris::Render() {
 
 		auto& holdTetrominoState = EnumToRotationStates(this->tetrominoHandler->GetRotationSystemEnumEquivalent(), holdTetromino)[0];
 
-		cellRect.w = holdPieceBG.w / holdTetrominoState[0].size();
-		cellRect.h = cellRect.w;
-
 		for (int r = 0; r < holdTetrominoState.size(); r++) {
 			for (int c = 0; c < holdTetrominoState[0].size(); c++) {
 				TetrominoEnum currCell = holdTetrominoState[r][c];
 
 				if (currCell != _) {
-					cellRect.x = c * cellRect.w;
-					cellRect.y = r * cellRect.h;
+					cellRect.x = c * cellRect.w + ((holdPieceBG.w - holdTetrominoState[0].size() * cellRect.w) / 2);
+					cellRect.y = r * cellRect.h + cellRect.h * 4;
 					SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
@@ -245,8 +250,6 @@ void Tetris::Render() {
 
 	const std::array<TetrominoEnum, 5> next5Tetrominos = this->tetrominoHandler->PeekNext5Tetrominos();
 
-	cellRect.w = next5PiecesBG.w;
-	cellRect.h = next5PiecesBG.h / 5;
 	for (int i = 0; i < next5Tetrominos.size(); i++) {
 
 		Tetromino::EnumToRGBA(next5Tetrominos[i], r, g, b, a);
@@ -254,21 +257,31 @@ void Tetris::Render() {
 
 		auto& tetrominoState = EnumToRotationStates(this->tetrominoHandler->GetRotationSystemEnumEquivalent(), next5Tetrominos[i])[0];
 
-		cellRect.w = next5PiecesBG.w / tetrominoState[0].size();
-		cellRect.h = next5PiecesBG.h / tetrominoState.size() / 5;
-
 		for (int r = 0; r < tetrominoState.size(); r++) {
 			for (int c = 0; c < tetrominoState[0].size(); c++) {
 				TetrominoEnum currCell = tetrominoState[r][c];
 
 				if (currCell != _) {
 					cellRect.x = next5PiecesBG.x + c * cellRect.w;
-					cellRect.y = next5PiecesBG.y + r * cellRect.h + i * next5PiecesBG.h / 5;
+					cellRect.y = next5PiecesBG.y + r * cellRect.h + i * next5PiecesBG.h / 6 + cellRect.h * 4;
 					SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
 		}
 	}
 
-	
+	// TEXT SECTION
+	// render the texts
+	SDL_FRect textRect{ 0, 0, 200, 100 };
+	SDL_Surface* textSurface = TTF_RenderText_Solid(this->MainFont, "Kenneth", {255,255,255,255});
+
+	//Create texture from surface pixels
+	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(this->renderContext, textSurface);
+
+	//Get rid of old surface
+	SDL_FreeSurface(textSurface);
+	SDL_RenderCopyF(this->renderContext, textTexture, NULL, &textRect);
+
+	// delete the text texture
+	SDL_DestroyTexture(textTexture);
 }

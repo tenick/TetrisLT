@@ -5,7 +5,7 @@
 #include "Tetromino/TetrominoHandler.hpp"
 
 #include <SDL.h>
-
+#include <SDL_ttf.h>
 #include <vector>
 
 class Tetris {
@@ -20,10 +20,14 @@ public:
 private:
 	void UpdateViewportByWindowSize();
 
+	// font
+	TTF_Font* MainFont = NULL;
+
 	// hotkeys
 	SDL_Scancode ResetKey = SDL_SCANCODE_R;
 
 	// states
+	bool isGhostPieceEnabled = true;
 	bool onReset = false;
 
 	SDL_Window*& windowContext;

@@ -7,6 +7,7 @@
 Game::Game()
 {
     SDL_Init(SDL_INIT_VIDEO);
+    TTF_Init();
 
     this->window = SDL_CreateWindow("TetrisL2",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
@@ -34,6 +35,7 @@ void Game::Start() {
         // events handling
         while (SDL_PollEvent(&this->e) != 0)
         {
+
             switch (this->e.type) {
                 case SDL_QUIT:
                     this->quit = true;
@@ -47,6 +49,7 @@ void Game::Start() {
 
         // updating game states
         //this->tetris->Update();
+
 
         this->mult->Update();
 

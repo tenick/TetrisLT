@@ -2,9 +2,10 @@
 #define GAME_H
 
 #include <SDL.h>
-#include <string>
+#include <SDL_ttf.h>
 #include "tetris.hpp"
 #include "UI/Multiplayer.hpp"
+#include <string>
 
 class Game {
 public:
