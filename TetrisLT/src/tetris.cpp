@@ -3,20 +3,26 @@
 #include "../h/Tetromino/TetrominoHelpers.hpp"
 
 #include <iostream>
+#include <string>
+#include <sstream>
+#include <chrono>
 
-Tetris::Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows, int columns, int vanishZoneHeight) :
+Tetris::Tetris(SDL_Window*& windowContext, int rows, int columns, int vanishZoneHeight) :
 	windowContext(windowContext),
-	renderContext(renderContext),
+	renderContext(SDL_GetRenderer(windowContext)),
 	ROWS(rows + vanishZoneHeight),
 	COLUMNS(columns),
 	VANISHZONEHEIGHT(vanishZoneHeight),
-	BoardState(std::vector<std::vector<TetrominoEnum>>(rows + vanishZoneHeight, std::vector<TetrominoEnum>(columns, _))),
+	BoardState(std::vector<std::vector<TetrominoEnum>>(this->ROWS, std::vector<TetrominoEnum>(this->COLUMNS, _))),
 	tetrominoHandler(new TetrominoHandler(BoardState))
 {
 	MainFont = TTF_OpenFont("fonts/Silkscreen-Regular.ttf", 28);
 	if (MainFont == NULL) {
 		std::cout << "error: " << TTF_GetError() << '\n';
 	}
+}
+const TetrisStats& Tetris::GetStats() const {
+	return this->tetrominoHandler->CurrentStats();
 }
 
 void Tetris::OnWindowEvent() {
@@ -25,6 +31,10 @@ void Tetris::OnWindowEvent() {
 
 void Tetris::SetViewport(SDL_Rect newViewport) {
 	this->playfieldViewport = newViewport;
+}
+
+const SDL_Rect& Tetris::Viewport() {
+	return this->playfieldViewport;
 }
 
 void Tetris::UpdateViewportByWindowSize() {
@@ -52,8 +62,8 @@ void Tetris::UpdateViewportByWindowSize() {
 }
 
 void Tetris::Reset() {
-	delete this->tetrominoHandler;
-
+	this->tetrominoHandler->Reset();
+	
 	// clear renderer
 	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderClear(this->renderContext);
@@ -64,22 +74,9 @@ void Tetris::Reset() {
 			this->BoardState[r][c] = _;
 		}
 	}
-	this->tetrominoHandler = new TetrominoHandler(this->BoardState);
 }
 
 void Tetris::Update() {
-	// handle keyboard
-	static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-
-	// check if user resets
-	if (currentKeyStates[this->ResetKey]) {
-		if (!this->onReset) {
-			Reset();
-			this->onReset = true;
-		}
-	}
-	else this->onReset = false;
-
 	this->tetrominoHandler->Update();
 }
 
@@ -269,19 +266,4 @@ void Tetris::Render() {
 			}
 		}
 	}
-
-	// TEXT SECTION
-	// render the texts
-	SDL_FRect textRect{ 0, 0, 200, 100 };
-	SDL_Surface* textSurface = TTF_RenderText_Solid(this->MainFont, "Kenneth", {255,255,255,255});
-
-	//Create texture from surface pixels
-	SDL_Texture* textTexture = SDL_CreateTextureFromSurface(this->renderContext, textSurface);
-
-	//Get rid of old surface
-	SDL_FreeSurface(textSurface);
-	SDL_RenderCopyF(this->renderContext, textTexture, NULL, &textRect);
-
-	// delete the text texture
-	SDL_DestroyTexture(textTexture);
 }

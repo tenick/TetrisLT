@@ -25,9 +25,16 @@ namespace Randomizer {
 		return arr;
 	}
 
+	void BagOf7::Reset() {
+		this->SetSeed(this->seed);
+		this->bag = { I_, J_, L_, O_, S_, T_, Z_ };
+		while (!this->tetrominoQueue.empty()) this->tetrominoQueue.pop();
+		this->refillQueue();
+	}
+
 	// TODO: calling EnumToTetromino might cause memory leak, because it's returning a new heap allocation, must delete that
 	void BagOf7::refillQueue() {
-		std::shuffle(std::begin(this->bag), std::end(this->bag), this->RNG);
+		std::shuffle(this->bag.begin(), this->bag.end(), this->RNG);
 		for (TetrominoEnum tetrEnum : this->bag)
 			tetrominoQueue.push(tetrEnum);
 	}

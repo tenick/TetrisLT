@@ -3,6 +3,7 @@
 
 #include "Tetromino/TetrominoEnum.hpp"
 #include "Tetromino/TetrominoHandler.hpp"
+#include "Tetromino/TetrisStats.hpp"
 
 #include <SDL.h>
 #include <SDL_ttf.h>
@@ -10,28 +11,26 @@
 
 class Tetris {
 public:
-	Tetris(SDL_Window*& windowContext, SDL_Renderer*& renderContext, int rows = 20, int columns = 10, int vanishZoneHeight=4);
+	Tetris(SDL_Window*& windowContext, int rows = 20, int columns = 10, int vanishZoneHeight=4);
 
 	void Update();
 	void Reset();
 	void OnWindowEvent();
 	void Render();
 	void SetViewport(SDL_Rect newViewport);
+	const SDL_Rect& Viewport();
+	const TetrisStats& GetStats() const;
 private:
 	void UpdateViewportByWindowSize();
 
 	// font
 	TTF_Font* MainFont = NULL;
 
-	// hotkeys
-	SDL_Scancode ResetKey = SDL_SCANCODE_R;
-
 	// states
 	bool isGhostPieceEnabled = true;
-	bool onReset = false;
 
 	SDL_Window*& windowContext;
-	SDL_Renderer*& renderContext;
+	SDL_Renderer* renderContext;
 	
 	const int ROWS;
 	const int COLUMNS;

@@ -14,6 +14,7 @@ namespace Randomizer {
 		RandomizerBase();
 		virtual TetrominoEnum Next() = 0;
 		virtual const std::array<TetrominoEnum, 5> PeekNext5() = 0;
+		virtual void Reset() = 0;
 		void SetSeed(int seed);
 	protected:
 		int seed = 0;

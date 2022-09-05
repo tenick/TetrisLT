@@ -4,7 +4,9 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include "tetris.hpp"
+#include "UI/SinglePlayer.hpp"
 #include "UI/Multiplayer.hpp"
+#include "UI/Menu.hpp"
 #include <string>
 
 class Game {
@@ -17,13 +19,13 @@ private:
     void loadTextureToScreen(std::string path);
     void drawQuad(const SDL_Rect& fillRect);
 
-    Tetris* tetris = NULL;
-
-    Multiplayer* mult = nullptr;
+    // UIs
+    
+    UI::Menu* mainMenu = nullptr;
 
     //Screen dimension constants
-    int SCREEN_WIDTH = 640;
-    int SCREEN_HEIGHT = 480;
+    int SCREEN_WIDTH = 800;
+    int SCREEN_HEIGHT = 800;
     
     //The window we'll be rendering to
     SDL_Window* window = NULL;

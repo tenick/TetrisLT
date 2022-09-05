@@ -10,10 +10,11 @@ namespace Randomizer {
 		BagOf7();
 		TetrominoEnum Next() override;
 		const std::array<TetrominoEnum, 5> PeekNext5() override;
+		void Reset() override;
 	private:
 		void refillQueue();
 
-		Tetromino::TetrominoEnum bag[7] = { I_, J_, L_, O_, S_, T_, Z_ };
+		std::array<Tetromino::TetrominoEnum, 7> bag = { I_, J_, L_, O_, S_, T_, Z_ };
 		std::queue<TetrominoEnum> tetrominoQueue;
 	};
 }

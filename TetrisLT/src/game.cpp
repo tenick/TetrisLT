@@ -1,29 +1,70 @@
 #include "../h/game.hpp"
 
 #include "../h/tetris.hpp"
+#include "../h/UI/Resources.hpp"
+
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_sdl.h"
+#include "../imgui/imgui_impl_sdlrenderer.h"
 
 #include <iostream>
 
 Game::Game()
 {
-    SDL_Init(SDL_INIT_VIDEO);
+    // SETUP SDL
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
+    {
+        printf("Error: %s\n", SDL_GetError());
+        return;
+    }
     TTF_Init();
 
+
+    // SECTION ------------ init the members
     this->window = SDL_CreateWindow("TetrisL2",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         SCREEN_WIDTH, SCREEN_HEIGHT,
         SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
-    this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED);
+    this->renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
     this->screenSurface = SDL_GetWindowSurface(this->window);
 
-    this->tetris = new Tetris(this->window, this->renderer);
-    this->mult = new Multiplayer(this->window, this->tetris,
-        {new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer), 
+
+    // SECTION ------------ Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+
+    Resources::io = &ImGui::GetIO();
+    Resources::style = &ImGui::GetStyle();
+
+    // load fonts
+    Resources::fontR32 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Regular.ttf", 32.0f);
+    Resources::fontR64 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Regular.ttf", 64.0f);
+    Resources::fontR128 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Regular.ttf", 128.0f);
+    Resources::fontB32 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 32.0f);
+    Resources::fontB64 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 64.0f);
+    Resources::fontB128 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 128.0f);
+
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsLight();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForSDLRenderer(this->window, this->renderer);
+    ImGui_ImplSDLRenderer_Init(this->renderer);
+
+
+
+    // SECTION ------------ init the members (UIs)
+    /*this->mult = new UI::Multiplayer(this->window, this->tetris,
+        { new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
          new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
          new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
          new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
-         new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer)});
+         new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer) });*/
+    this->mainMenu = new UI::Menu(this->window);
+
 }
 
 void Game::Start() {
@@ -35,24 +76,23 @@ void Game::Start() {
         // events handling
         while (SDL_PollEvent(&this->e) != 0)
         {
+            ImGui_ImplSDL2_ProcessEvent(&this->e);
 
             switch (this->e.type) {
                 case SDL_QUIT:
                     this->quit = true;
                     break;
                 case SDL_WINDOWEVENT:
-                    //this->tetris->OnWindowEvent();
-                    this->mult->OnWindowEvent();
+                    this->mainMenu->OnWindowEvent();
                     break;
             }
         }
 
         // updating game states
-        //this->tetris->Update();
+        mainMenu->Update();
 
 
-        this->mult->Update();
-
+        // SECTION -------- drawing frames
         // framerate cap handling
         float timeElapsed = SDL_GetTicks64() - startTime;
         if (timeElapsed < maxMS) {
@@ -62,13 +102,26 @@ void Game::Start() {
             startTime = SDL_GetTicks64();
 
 
-        // drawing frames
-        //this->tetris->Render();
-        this->mult->Render();
+        // Start the Dear ImGui frame
+        ImGui_ImplSDLRenderer_NewFrame();
+        ImGui_ImplSDL2_NewFrame();
+        ImGui::NewFrame();
+
+        // clear renderer
+        SDL_SetRenderDrawColor(this->renderer, 255, 110, 110, 255);
+        SDL_RenderClear(this->renderer);
+
+        // draw UI
+        mainMenu->Render();
+        
+
+        ImGui::Render();
+        ImGui_ImplSDLRenderer_RenderDrawData(ImGui::GetDrawData());
         SDL_RenderPresent(this->renderer);
 
+
         // logging
-        std::cout << "Time elapsed: " << timeElapsed << " | FPS: " << 1000.0f / timeElapsed << '\n';
+        //std::cout << "Time elapsed: " << timeElapsed << " | FPS: " << 1000.0f / timeElapsed << '\n';
     }
 }
 
@@ -113,11 +166,17 @@ void Game::loadTextureToScreen(std::string path) {
 }
 
 Game::~Game() {
-    delete this->tetris;
+    delete this->mainMenu;
 
     //Destroy window
     SDL_DestroyWindow(this->window);
 
-    //Quit SDL subsystems
+    // Cleanup
+    ImGui_ImplSDLRenderer_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(window);
     SDL_Quit();
 }

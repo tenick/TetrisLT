@@ -11,18 +11,67 @@
 
 #include "SDL.h"
 
+#include <time.h>
+
 namespace Tetromino {
-	TetrominoHandler::TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState, 
+	TetrominoHandler::TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState,
 									   Randomizer::RandomizerBase* randomizer,
 									   RotationSystem::RotationSystemBase* rotationSystemBase)
-		: BoardState(boardState),
-		  BoardHeight(boardState.size()), BoardWidth(boardState[0].size()),
-		  randomizer(randomizer),
-		  rotationSystem(rotationSystemBase),
-		  currentTetromino(EnumToTetromino(randomizer->Next()))
+		:   BoardState(boardState),
+			BoardHeight(boardState.size()), BoardWidth(boardState[0].size()),
+			randomizer(randomizer),
+			rotationSystem(rotationSystemBase),
+			currentTetromino(EnumToTetromino(randomizer->Next()))
 	{
 		gravityStartTime = SDL_GetTicks64();
 	}
+
+	void TetrominoHandler::Reset() {
+		randomizer->Reset();
+
+		delete this->currentTetromino;
+		this->currentTetromino = EnumToTetromino(randomizer->Next());
+		this->holdTetromino = _;
+
+		// reset stats
+		this->tetrisStats.LinesCleared = 0;
+		this->tetrisStats.PiecesLocked = 0;
+
+		// reset states
+		this->onHarddrop = false;
+
+		this->isDelayingAfterPieceLock = false;
+		this->delayAfterPieceLockStartTime = 0;
+
+		this->gravityStartTime = 0;
+
+		this->SDSActivated = false;
+		this->currentSDS = 0;
+
+		this->isLocking = false;
+		this->highestRowOffsetReached = 0;
+		this->currentLockTime = 0;
+		this->currentLockReset = 0;
+
+		this->holdLimit = 1;
+		this->currentHold = 0;
+
+		this->onLeftDAS = false;
+		this->leftARRActivated = false;
+		this->currentLeftDAS = 0;
+		this->currentLeftARR = 0;
+
+		this->onRightDAS = false;
+		this->rightARRActivated = false;
+		this->currentRightDAS = 0;
+		this->currentRightARR = 0;
+
+
+		this->onCWRotate = false;
+		this->onCCWRotate = false;
+		this->on180Rotate = false;
+	}
+
 
 	TetrominoBase* TetrominoHandler::EnumToTetromino(TetrominoEnum tetrEnum) {
 		auto& rotationStates = this->rotationSystem->GetTetrominoRotationStates().at(tetrEnum);
@@ -47,6 +96,10 @@ namespace Tetromino {
 
 	RotationSystem::RotationSystemEnum TetrominoHandler::GetRotationSystemEnumEquivalent() {
 		return this->rotationSystem->GetRotationSystemEnumEquivalent();
+	}
+
+	const TetrisStats& TetrominoHandler::CurrentStats() const {
+		return this->tetrisStats;
 	}
 
 	void TetrominoHandler::Lock() {
@@ -89,6 +142,9 @@ namespace Tetromino {
 		this->Next();
 		this->currentHold = 0;
 		this->highestRowOffsetReached = 0;
+
+		this->tetrisStats.PiecesLocked++;
+		this->tetrisStats.LinesCleared += rowToAdd;
 
 		// start delay after locking piece (preventing accidental hard drops)
 		this->isDelayingAfterPieceLock = true;

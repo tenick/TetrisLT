@@ -8,6 +8,7 @@
 #include "TetrominoEnum.hpp"
 #include "TetrominoMoveEnum.hpp"
 #include "TetrominoRotationEnum.hpp"
+#include "TetrisStats.hpp"
 
 #include <SDL.h>
 
@@ -27,7 +28,9 @@ namespace Tetromino {
 		bool Rotate(TetrominoRotationEnum rotateDir);
 		void Lock();
 		void Next();
+		void Reset();
 		void Update();
+		const TetrisStats& CurrentStats() const;
 		TetrominoEnum GetHoldTetromino();
 		TetrominoBase*& GetCurrentTetromino();
 
@@ -40,6 +43,9 @@ namespace Tetromino {
 		void ResetLock();
 		void ResetLockDelay();
 		void StartLockDelay();
+
+		// gameplay stats
+		TetrisStats tetrisStats;
 
 		// playfield
 		std::vector<std::vector<TetrominoEnum>>& BoardState;
@@ -63,6 +69,7 @@ namespace Tetromino {
 		int LockDelay = 500; // Delay before locking tetromino in place (ms)
 		int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
 		int DelayAfterPieceLock = 100; // ms delay on piece lock (to prevent accidental hard drops)
+		bool isGhostEnabled = true;
 
 		SDL_Scancode MoveLeft = SDL_SCANCODE_LEFT;
 		SDL_Scancode MoveRight = SDL_SCANCODE_RIGHT;
@@ -74,7 +81,6 @@ namespace Tetromino {
 		SDL_Scancode Rotate180 = SDL_SCANCODE_D;
 
 		// states
-		bool isGhostEnabled = true;
 
 		bool onHarddrop = false;
 
