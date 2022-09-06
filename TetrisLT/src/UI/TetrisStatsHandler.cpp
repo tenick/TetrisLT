@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <chrono>
+#include <iomanip>
 
 namespace UI {
 	TetrisStatsHandler::TetrisStatsHandler(SDL_Renderer*& renderCtx, const Timer& timer, const SDL_Rect& tetrisViewPort, const TetrisStats& tetrisStats)
@@ -20,16 +21,22 @@ namespace UI {
 
 		// TEXT SECTION
 		// render the texts
+		SDL_RenderSetViewport(this->renderCtx, &this->tetrisViewPort);
+
+		float containerWidth = this->tetrisViewPort.w / 4;
+		float containerHeight = this->tetrisViewPort.h;
+
 
 		// username text
 		// calculate ratio of text to container width to make sure text fits its container (holdPieceArea)
 		int tw, th;
 		TTF_SizeText(this->MainFont, "Kenneth", &tw, &th);
-		float twRatio = tetrisViewPort.w / 4 / tw;
+		float twRatio = containerWidth / tw;
 		float thRatio = (float)th / tw;
 		float newTw = twRatio * tw;
 		float newTh = thRatio * twRatio * tw;
-		SDL_FRect textRect{ 0, (float)tetrisViewPort.h / 3, newTw, newTh };
+		float usernameHeight = newTh;
+		SDL_FRect textRect{ 0, containerHeight / 3, newTw, newTh };
 
 		SDL_Surface* textSurface = TTF_RenderText_Solid(this->MainFont, "Kenneth", { 255,255,255,255 });
 
@@ -44,7 +51,8 @@ namespace UI {
 		SDL_DestroyTexture(textTexture);
 
 
-		// time
+		// time text 
+		// time width must be 1/8th of the viewport width, figure out the height
 		int currTimeInMS = this->timer.CurrentTick();
 
 		using namespace std::chrono;
@@ -54,17 +62,17 @@ namespace UI {
 		auto s = duration_cast<seconds>(d);
 
 		std::stringstream ss;
-		ss << m.count() << ":" << s.count();
+		ss << std::setw(2) << std::setfill('0') << m.count() << ":" << std::setw(2) << std::setfill('0') << s.count();
 
 		std::string msToMMSS = ss.str();
 
 
 		TTF_SizeText(this->MainFont, msToMMSS.c_str(), &tw, &th);
-		twRatio = tetrisViewPort.w / 4 / tw;
+		twRatio = (float)this->tetrisViewPort.w / 8 / tw;
 		thRatio = (float)th / tw;
 		newTw = twRatio * tw;
 		newTh = thRatio * twRatio * tw;
-		textRect = { 0, (float)tetrisViewPort.h / 2, newTw, newTh };
+		textRect = { (float)this->tetrisViewPort.w / 2 - newTw / 2, 0, newTw, newTh };
 
 		textSurface = TTF_RenderText_Solid(this->MainFont, msToMMSS.c_str(), { 255,255,255,255 });
 
@@ -78,5 +86,58 @@ namespace UI {
 		// delete the text texture
 		SDL_DestroyTexture(textTexture);
 
+
+		// PPS text
+		// calculate pps
+		float PPSf = std::roundf((float)this->tetrisStats.PiecesLocked / currTimeInMS * 1000 * 100) / 100.0f;
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(2) << PPSf;
+
+		std::string PPS = "PPS: " + stream.str();
+
+
+		TTF_SizeText(this->MainFont, PPS.c_str(), &tw, &th);
+		twRatio = containerWidth / tw;
+		thRatio = (float)th / tw;
+		newTw = twRatio * tw;
+		newTh = thRatio * twRatio * tw;
+		float PPSheight = newTh;
+		textRect = { 0, containerHeight / 3 + usernameHeight, newTw, newTh };
+
+		textSurface = TTF_RenderText_Solid(this->MainFont, PPS.c_str(), { 255,255,255,255 });
+
+		//Create texture from surface pixels
+		textTexture = SDL_CreateTextureFromSurface(this->renderCtx, textSurface);
+
+		//Get rid of old surface
+		SDL_FreeSurface(textSurface);
+		SDL_RenderCopyF(this->renderCtx, textTexture, NULL, &textRect);
+
+		// delete the text texture
+		SDL_DestroyTexture(textTexture);
+
+
+		// Lines text
+		std::string lines = "Lines: " + std::to_string(this->tetrisStats.LinesCleared);
+
+		TTF_SizeText(this->MainFont, lines.c_str(), &tw, &th);
+		twRatio = containerWidth / tw;
+		thRatio = (float)th / tw;
+		newTw = twRatio * tw;
+		newTh = thRatio * twRatio * tw;
+		textRect = { 0, containerHeight / 3 + usernameHeight + PPSheight, newTw, newTh };
+
+		textSurface = TTF_RenderText_Solid(this->MainFont, lines.c_str(), { 255,255,255,255 });
+
+		//Create texture from surface pixels
+		textTexture = SDL_CreateTextureFromSurface(this->renderCtx, textSurface);
+
+		//Get rid of old surface
+		SDL_FreeSurface(textSurface);
+		SDL_RenderCopyF(this->renderCtx, textTexture, NULL, &textRect);
+
+		// delete the text texture
+		SDL_DestroyTexture(textTexture);
 	}
 }

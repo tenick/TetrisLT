@@ -83,8 +83,8 @@ void Tetris::Update() {
 void Tetris::Render() {
 	// draw playfield viewport bg
 	SDL_RenderSetViewport(this->renderContext, &this->playfieldViewport);
-	SDL_SetRenderDrawColor(this->renderContext, 0x22, 0x22, 0x22, 0xff);
-	SDL_RenderFillRect(this->renderContext, &this->playfieldViewport);
+	//SDL_SetRenderDrawColor(this->renderContext, 0x22, 0x22, 0x22, 0xff);
+	//SDL_RenderFillRect(this->renderContext, &this->playfieldViewport);
 
 
 	// drawing current board state
@@ -206,11 +206,16 @@ void Tetris::Render() {
 	// draw hold piece area
 	SDL_FRect holdPieceBG{};
 	holdPieceBG.w = (float)this->playfieldViewport.w / 4;
-	holdPieceBG.h = this->playfieldViewport.h;
+	holdPieceBG.h = this->playfieldViewport.h - cellRect.h * 4;
 	holdPieceBG.x = 0;
-	holdPieceBG.y = 0;
+	holdPieceBG.y = cellRect.h * 4;
 	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderFillRectF(this->renderContext, &holdPieceBG);
+
+	// 1 piece area, for hold piece and next 5 pieces, should be 1/6 of the height ^2
+	SDL_FRect holdAndNext5PiecesArea{ 0, 0, holdPieceBG.h / 6, holdPieceBG.h / 6 };
+	cellRect.w = holdAndNext5PiecesArea.w / 4;
+	cellRect.h = holdAndNext5PiecesArea.h / 4;
 
 	TetrominoEnum holdTetromino = this->tetrominoHandler->GetHoldTetromino();
 	SDL_FRect viewportRect{};
@@ -227,7 +232,7 @@ void Tetris::Render() {
 
 				if (currCell != _) {
 					cellRect.x = c * cellRect.w + ((holdPieceBG.w - holdTetrominoState[0].size() * cellRect.w) / 2);
-					cellRect.y = r * cellRect.h + cellRect.h * 4;
+					cellRect.y = r * cellRect.h + holdPieceBG.y;
 					SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
@@ -238,10 +243,10 @@ void Tetris::Render() {
 	// draw next 5 viewport
 	// draw next 5 pieces area
 	SDL_FRect next5PiecesBG{};
-	next5PiecesBG.w = (float)this->playfieldViewport.w / 4;
-	next5PiecesBG.h = this->playfieldViewport.h;
+	next5PiecesBG.w = holdPieceBG.w;
+	next5PiecesBG.h = holdPieceBG.h;
 	next5PiecesBG.x = holdPieceBG.w + boardBG.w;
-	next5PiecesBG.y = 0;
+	next5PiecesBG.y = holdPieceBG.y;
 	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
 	SDL_RenderFillRectF(this->renderContext, &next5PiecesBG);
 
@@ -260,7 +265,7 @@ void Tetris::Render() {
 
 				if (currCell != _) {
 					cellRect.x = next5PiecesBG.x + c * cellRect.w;
-					cellRect.y = next5PiecesBG.y + r * cellRect.h + i * next5PiecesBG.h / 6 + cellRect.h * 4;
+					cellRect.y = next5PiecesBG.y + r * cellRect.h + i * holdAndNext5PiecesArea.h;
 					SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}

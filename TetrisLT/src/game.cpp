@@ -108,7 +108,7 @@ void Game::Start() {
         ImGui::NewFrame();
 
         // clear renderer
-        SDL_SetRenderDrawColor(this->renderer, 255, 110, 110, 255);
+        SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
         SDL_RenderClear(this->renderer);
 
         // draw UI
