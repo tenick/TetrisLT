@@ -34,10 +34,10 @@ Game::Game()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
+    // load resources
     Resources::io = &ImGui::GetIO();
     Resources::style = &ImGui::GetStyle();
 
-    // load fonts
     Resources::fontR32 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Regular.ttf", 32.0f);
     Resources::fontR64 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Regular.ttf", 64.0f);
     Resources::fontR128 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Regular.ttf", 128.0f);
@@ -64,7 +64,7 @@ Game::Game()
          new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer),
          new Tetris(this->window, this->renderer), new Tetris(this->window, this->renderer) });*/
     this->mainMenu = new UI::Menu(this->window);
-
+    
 }
 
 void Game::Start() {

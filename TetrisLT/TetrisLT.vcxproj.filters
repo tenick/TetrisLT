@@ -114,6 +114,12 @@
     <ClCompile Include="src\Timer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\UI\Results.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\Delay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp">
@@ -228,6 +234,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\Tetromino\TetrisSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\UI\Results.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\UI\Delay.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

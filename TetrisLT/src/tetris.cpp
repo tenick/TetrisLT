@@ -61,6 +61,19 @@ void Tetris::UpdateViewportByWindowSize() {
 		this->playfieldViewport.x = (fmax(SCREEN_WIDTH, SCREEN_HEIGHT) - this->playfieldViewport.w) / 2;
 }
 
+void Tetris::OnFinish() {
+	this->isFinished = true;
+
+	// replace current pieces in board with garbage (to indicate it's finished)
+	for (int r = 0; r < this->BoardState.size(); r++) {
+		for (int c = 0; c < this->BoardState[r].size(); c++) {
+			TetrominoEnum tetrEnum = this->BoardState[r][c];
+			if (tetrEnum != _)
+				this->BoardState[r][c] = G_;
+		}
+	}
+}
+
 void Tetris::Reset() {
 	this->tetrominoHandler->Reset();
 	
@@ -77,7 +90,8 @@ void Tetris::Reset() {
 }
 
 void Tetris::Update() {
-	this->tetrominoHandler->Update();
+	if (!this->isFinished)
+		this->tetrominoHandler->Update();
 }
 
 void Tetris::Render() {

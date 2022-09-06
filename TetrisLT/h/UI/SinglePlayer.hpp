@@ -35,6 +35,7 @@ namespace UI {
 		// states
 		bool onReset = false;
 		bool onEsc = false;
+		bool isFinished = false;
 
 		// make tetris settings class (e.g. TetrisConfig tetrisConfig; )
 	};

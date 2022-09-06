@@ -15,6 +15,31 @@ namespace UI {
 		}
 	}
 
+	void TetrisStatsHandler::Update() {
+		// covert ms time to MM:SS time
+		int currTimeInMS = this->timer.CurrentTick();
+
+		using namespace std::chrono;
+		auto d = (milliseconds)currTimeInMS;
+		auto m = duration_cast<minutes>(d);
+		d -= m;
+		auto s = duration_cast<seconds>(d);
+
+		std::stringstream ss;
+		ss << std::setw(2) << std::setfill('0') << m.count() << ":" << std::setw(2) << std::setfill('0') << s.count();
+
+		this->currTime = ss.str();
+
+
+		// calculate pps
+		float PPSf = std::roundf((float)this->tetrisStats.PiecesLocked / currTimeInMS * 1000 * 100) / 100.0f;
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(2) << PPSf;
+
+		this->currPPS = "PPS: " + stream.str();
+	}
+
 	void TetrisStatsHandler::Render() {
 		std::cout << "lines cleared: " << tetrisStats.LinesCleared << " | " << "pieces locked: " << tetrisStats.PiecesLocked << '\n';
 
@@ -53,28 +78,14 @@ namespace UI {
 
 		// time text 
 		// time width must be 1/8th of the viewport width, figure out the height
-		int currTimeInMS = this->timer.CurrentTick();
-
-		using namespace std::chrono;
-		auto d = (milliseconds)currTimeInMS;
-		auto m = duration_cast<minutes>(d);
-		d -= m;
-		auto s = duration_cast<seconds>(d);
-
-		std::stringstream ss;
-		ss << std::setw(2) << std::setfill('0') << m.count() << ":" << std::setw(2) << std::setfill('0') << s.count();
-
-		std::string msToMMSS = ss.str();
-
-
-		TTF_SizeText(this->MainFont, msToMMSS.c_str(), &tw, &th);
+		TTF_SizeText(this->MainFont, this->currTime.c_str(), &tw, &th);
 		twRatio = (float)this->tetrisViewPort.w / 8 / tw;
 		thRatio = (float)th / tw;
 		newTw = twRatio * tw;
 		newTh = thRatio * twRatio * tw;
 		textRect = { (float)this->tetrisViewPort.w / 2 - newTw / 2, 0, newTw, newTh };
 
-		textSurface = TTF_RenderText_Solid(this->MainFont, msToMMSS.c_str(), { 255,255,255,255 });
+		textSurface = TTF_RenderText_Solid(this->MainFont, this->currTime.c_str(), { 255,255,255,255 });
 
 		//Create texture from surface pixels
 		textTexture = SDL_CreateTextureFromSurface(this->renderCtx, textSurface);
@@ -88,16 +99,7 @@ namespace UI {
 
 
 		// PPS text
-		// calculate pps
-		float PPSf = std::roundf((float)this->tetrisStats.PiecesLocked / currTimeInMS * 1000 * 100) / 100.0f;
-
-		std::stringstream stream;
-		stream << std::fixed << std::setprecision(2) << PPSf;
-
-		std::string PPS = "PPS: " + stream.str();
-
-
-		TTF_SizeText(this->MainFont, PPS.c_str(), &tw, &th);
+		TTF_SizeText(this->MainFont, this->currPPS.c_str(), &tw, &th);
 		twRatio = containerWidth / tw;
 		thRatio = (float)th / tw;
 		newTw = twRatio * tw;
@@ -105,7 +107,7 @@ namespace UI {
 		float PPSheight = newTh;
 		textRect = { 0, containerHeight / 3 + usernameHeight, newTw, newTh };
 
-		textSurface = TTF_RenderText_Solid(this->MainFont, PPS.c_str(), { 255,255,255,255 });
+		textSurface = TTF_RenderText_Solid(this->MainFont, this->currPPS.c_str(), { 255,255,255,255 });
 
 		//Create texture from surface pixels
 		textTexture = SDL_CreateTextureFromSurface(this->renderCtx, textSurface);

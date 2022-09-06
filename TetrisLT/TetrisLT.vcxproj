@@ -155,8 +155,10 @@
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\UI\Delay.cpp" />
     <ClCompile Include="src\UI\Menu.cpp" />
     <ClCompile Include="src\UI\Resources.cpp" />
+    <ClCompile Include="src\UI\Results.cpp" />
     <ClCompile Include="src\UI\SinglePlayer.cpp" />
     <ClCompile Include="src\game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -205,9 +207,11 @@
     <ClInclude Include="h\Tetromino\TopOutConditionsEnum.hpp" />
     <ClInclude Include="h\Tetromino\Z.hpp" />
     <ClInclude Include="h\Timer.hpp" />
+    <ClInclude Include="h\UI\Delay.hpp" />
     <ClInclude Include="h\UI\Menu.hpp" />
     <ClInclude Include="h\UI\Multiplayer.hpp" />
     <ClInclude Include="h\UI\Resources.hpp" />
+    <ClInclude Include="h\UI\Results.hpp" />
     <ClInclude Include="h\UI\SinglePlayer.hpp" />
     <ClInclude Include="h\UI\TetrisConfig.hpp" />
     <ClInclude Include="h\UI\TetrisStatsHandler.hpp" />

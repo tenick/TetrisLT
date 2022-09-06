@@ -1,4 +1,8 @@
 #include "../../h/UI/SinglePlayer.hpp"
+#include "../../imgui/imgui.h"
+#include "../../imgui/imgui_impl_sdl.h"
+#include "../../imgui/imgui_impl_sdlrenderer.h"
+
 
 namespace UI {
 	SinglePlayer::SinglePlayer(SDL_Window*& windowCtx)
@@ -18,7 +22,7 @@ namespace UI {
 		}
 		else this->onReset = false;
 
-		// check if user resets
+		// check if user exits
 		if (currentKeyStates[this->BackToMenuKey]) {
 			if (!this->onEsc) {
 				this->Hide();
@@ -27,11 +31,24 @@ namespace UI {
 		}
 		else this->onEsc = false;
 
-		this->tetris->Update();
+		// check if finished
+		if (this->tetris->GetStats().LinesCleared >= 40) {
+			this->tetris->OnFinish();
+			this->isFinished = true;
+		}
+
+		if (!this->isFinished) {
+			this->tetrisStatsHandler.Update();
+			this->tetris->Update();
+		}
 	}
 
 	void SinglePlayer::Render() {
 		this->tetris->Render();
+
+		// add back button
+		ImGui::Button("wat");
+
 		this->tetrisStatsHandler.Render();
 	}
 

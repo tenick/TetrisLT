@@ -16,6 +16,7 @@ public:
 	void Update();
 	void Reset();
 	void OnWindowEvent();
+	void OnFinish();
 	void Render();
 	void SetViewport(SDL_Rect newViewport);
 	const SDL_Rect& Viewport();
@@ -28,6 +29,7 @@ private:
 
 	// states
 	bool isGhostPieceEnabled = true;
+	bool isFinished = false;
 
 	SDL_Window*& windowContext;
 	SDL_Renderer* renderContext;

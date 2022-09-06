@@ -33,6 +33,8 @@ namespace Tetromino {
 			R = 0xA0; G = 0x20; B = 0xF0; A = 0xFF; break; // purple
 		case Z_:
 			R = 0xFF; G = 0x00; B = 0x00; A = 0xFF; break; // red
+		case G_:
+			R = 0x21; G = 0x21; B = 0x21; A = 0xFF; break; // dark gray
 		}
 	}
 
