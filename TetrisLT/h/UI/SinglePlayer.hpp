@@ -5,6 +5,7 @@
 
 #include "../Timer.hpp"
 #include "TetrisStatsHandler.hpp"
+#include "Results.hpp"
 
 namespace UI {
 	class SinglePlayer {
@@ -22,20 +23,22 @@ namespace UI {
 	private:
 		SDL_Window*& windowCtx;
 		SDL_Renderer* renderCtx;
-		Tetris* tetris = nullptr;
-		bool isShowing = false;
 		Timer timer;
+		int AmountOfLinesToClearToFinish = 10;
+
+		// UIs
+		Tetris* tetris = nullptr;
 		UI::TetrisStatsHandler tetrisStatsHandler;
+		UI::Results resultsScreen;
 
 		// hotkeys
 		SDL_Scancode ResetKey = SDL_SCANCODE_R;
 		SDL_Scancode BackToMenuKey = SDL_SCANCODE_ESCAPE;
 
-
 		// states
+		bool isShowing = false;
 		bool onReset = false;
 		bool onEsc = false;
-		bool isFinished = false;
 
 		// make tetris settings class (e.g. TetrisConfig tetrisConfig; )
 	};

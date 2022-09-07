@@ -72,7 +72,6 @@ void Game::Start() {
     float maxMS = 1000.0f / desiredFrameRate;
     Uint64 startTime = SDL_GetTicks64();
     while (!this->quit) {
-
         // events handling
         while (SDL_PollEvent(&this->e) != 0)
         {
@@ -87,10 +86,9 @@ void Game::Start() {
                     break;
             }
         }
-
+        
         // updating game states
         mainMenu->Update();
-
 
         // SECTION -------- drawing frames
         // framerate cap handling

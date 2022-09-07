@@ -61,6 +61,11 @@ void Tetris::UpdateViewportByWindowSize() {
 		this->playfieldViewport.x = (fmax(SCREEN_WIDTH, SCREEN_HEIGHT) - this->playfieldViewport.w) / 2;
 }
 
+bool Tetris::IsFinished() {
+	return this->isFinished;
+}
+
+
 void Tetris::OnFinish() {
 	this->isFinished = true;
 
@@ -87,6 +92,8 @@ void Tetris::Reset() {
 			this->BoardState[r][c] = _;
 		}
 	}
+
+	this->isFinished = false;
 }
 
 void Tetris::Update() {

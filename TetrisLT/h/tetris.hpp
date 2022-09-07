@@ -17,6 +17,7 @@ public:
 	void Reset();
 	void OnWindowEvent();
 	void OnFinish();
+	bool IsFinished();
 	void Render();
 	void SetViewport(SDL_Rect newViewport);
 	const SDL_Rect& Viewport();

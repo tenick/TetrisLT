@@ -10,10 +10,12 @@ namespace UI {
 
 	class TetrisConfig {
 	public:
-		TetrisConfig(bool& show);
 		void Show();
+		void Hide();
+		bool IsShowing();
+		void Render();
 	private:
-		bool& showTetrisConfig;
+		bool isShowing = false;
 		char name[100] = "";
 		char profileName[100] = "";
 		int das = 5;

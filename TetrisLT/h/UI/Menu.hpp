@@ -26,14 +26,12 @@ namespace UI {
         UI::Multiplayer* mult = nullptr;
 
         bool showMenu = true;
-        bool showSinglePlayer = false;
         bool LANClicked = true;
         bool WANClicked = false;
         
 
         // other UI managed by menu
         TetrisConfig tetrisConfigUI;
-        bool showTetrisConfig = false;
 	};
 
 }

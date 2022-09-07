@@ -3,7 +3,6 @@
 #include "../../imgui/imgui_impl_sdl.h"
 #include "../../imgui/imgui_impl_sdlrenderer.h"
 
-
 namespace UI {
 	SinglePlayer::SinglePlayer(SDL_Window*& windowCtx)
 		: windowCtx(windowCtx), renderCtx(SDL_GetRenderer(windowCtx)), tetris(new Tetris(windowCtx)), tetrisStatsHandler(this->renderCtx, timer, tetris->Viewport(), tetris->GetStats())
@@ -13,43 +12,60 @@ namespace UI {
 		// handle keyboard
 		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-		// check if user resets
-		if (currentKeyStates[this->ResetKey]) {
-			if (!this->onReset) {
-				this->Reset();
-				this->onReset = true;
+		// update if singplayer player not finished yet
+		if (!this->tetris->IsFinished()) {
+			// check if finished
+			if (this->tetris->GetStats().LinesCleared >= this->AmountOfLinesToClearToFinish) {
+				this->tetris->OnFinish();
+
+				// setup results screen
+				this->resultsScreen.UpdateStats(this->tetris->GetStats());
+				this->resultsScreen.Show();
 			}
-		}
-		else this->onReset = false;
 
-		// check if user exits
-		if (currentKeyStates[this->BackToMenuKey]) {
-			if (!this->onEsc) {
-				this->Hide();
-				this->onEsc = true;
+			// check if user resets
+			if (currentKeyStates[this->ResetKey]) {
+				if (!this->onReset) {
+					this->Reset();
+					this->onReset = true;
+				}
 			}
-		}
-		else this->onEsc = false;
+			else this->onReset = false;
 
-		// check if finished
-		if (this->tetris->GetStats().LinesCleared >= 40) {
-			this->tetris->OnFinish();
-			this->isFinished = true;
-		}
+			// check if user exits
+			if (currentKeyStates[this->BackToMenuKey]) {
+				if (!this->onEsc) {
+					this->Hide();
+					this->onEsc = true;
+				}
+			}
+			else this->onEsc = false;
 
-		if (!this->isFinished) {
 			this->tetrisStatsHandler.Update();
 			this->tetris->Update();
 		}
 	}
 
 	void SinglePlayer::Render() {
-		this->tetris->Render();
+		// tetris UI
+		if (!this->tetris->IsFinished()) {
+			this->tetris->Render();
 
-		// add back button
-		ImGui::Button("wat");
+			// add back button
+			ImGui::Button("wat");
 
-		this->tetrisStatsHandler.Render();
+			this->tetrisStatsHandler.Render();
+			return;
+		}
+
+		// results screen
+		if (this->resultsScreen.IsShowing()) {
+			resultsScreen.Render();
+			return;
+		}
+
+		// if no screens available, hide
+		this->Hide();
 	}
 
 	void SinglePlayer::OnWindowEvent() {
