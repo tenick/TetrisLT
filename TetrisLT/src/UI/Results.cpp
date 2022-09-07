@@ -20,7 +20,6 @@ namespace UI {
 		return this->isShowing;
 	}
 	void Results::Update() {
-
 	}
 	void Results::Render() {
 		const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -40,7 +39,7 @@ namespace UI {
 		
 		// render text stats here
 		ImGui::PushFont(Resources::fontR32);
-		if (ImGui::BeginTable("resultsTable", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+		if (ImGui::BeginTable("resultsTable", 2, ImGuiTableFlags_Borders ))
 		{
 			ImGui::TableNextColumn(); ImGui::Text("Game Duration:");
 			ImGui::TableNextColumn(); ImGui::Text(Helpers::MStoMM_SSformat(this->currStats.gameDurationInMS).c_str());
@@ -51,8 +50,11 @@ namespace UI {
 			ImGui::TableNextColumn(); ImGui::Text("Pieces Locked:");
 			ImGui::TableNextColumn(); ImGui::Text(std::to_string(this->currStats.PiecesLocked).c_str());
 
+			// convert PPS float to string with 2 decimal places precision
+			std::stringstream stream;
+			stream << std::fixed << std::setprecision(2) << this->currStats.PPS;
 			ImGui::TableNextColumn(); ImGui::Text("PPS (Piece Per Second):");
-			ImGui::TableNextColumn(); ImGui::Text(std::to_string(this->currStats.PPS).c_str());
+			ImGui::TableNextColumn(); ImGui::Text(stream.str().c_str());
 
 			
 			ImGui::EndTable();

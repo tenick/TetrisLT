@@ -20,6 +20,7 @@ public:
 	bool IsFinished();
 	void Render();
 	void SetViewport(SDL_Rect newViewport);
+	void SetSeed(int newSeed);
 	const SDL_Rect& Viewport();
 	const TetrisStats& GetStats() const;
 private:

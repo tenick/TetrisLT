@@ -30,6 +30,7 @@ namespace Tetromino {
 		void Next();
 		void Reset();
 		void Update();
+		void SetSeed(int newSeed);
 		const TetrisStats& CurrentStats() const;
 		TetrominoEnum GetHoldTetromino();
 		TetrominoBase*& GetCurrentTetromino();

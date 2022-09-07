@@ -6,9 +6,11 @@
 namespace UI {
 	class Delay {
 	public:
-		Delay(int ticks=3, int tickDurationInMS=3, bool showCountdown=false);
+		Delay(int ticks=3, int tickDurationInMS=1000, bool showCountdown=true);
 		void Show();
+		void Show(int ticks, int tickDurationInMS, bool showCountdown);
 		void Update();
+		void Render();
 		void Hide();
 		bool IsShowing();
 	private:
@@ -16,7 +18,7 @@ namespace UI {
 		int startTime = 0;
 		int ticks = 3;
 		int tickDurationInMS = 3;
-		bool showCountdown = false; // will need render() for this
+		bool showCountdown = true;
 		bool isShowing = false;
 	};
 }

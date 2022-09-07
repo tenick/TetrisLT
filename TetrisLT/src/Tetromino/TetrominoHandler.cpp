@@ -26,6 +26,11 @@ namespace Tetromino {
 		gravityStartTime = SDL_GetTicks64();
 	}
 
+	void TetrominoHandler::SetSeed(int newSeed) {
+		this->randomizer->SetSeed(newSeed);
+	}
+
+
 	void TetrominoHandler::Reset() {
 		randomizer->Reset();
 
@@ -34,8 +39,7 @@ namespace Tetromino {
 		this->holdTetromino = _;
 
 		// reset stats
-		this->tetrisStats.LinesCleared = 0;
-		this->tetrisStats.PiecesLocked = 0;
+		this->tetrisStats = TetrisStats();
 
 		// reset states
 		this->onHarddrop = false;

@@ -4,6 +4,7 @@
 #include "../tetris.hpp"
 
 #include "../Timer.hpp"
+#include "Delay.hpp"
 #include "TetrisStatsHandler.hpp"
 #include "Results.hpp"
 
@@ -24,10 +25,11 @@ namespace UI {
 		SDL_Window*& windowCtx;
 		SDL_Renderer* renderCtx;
 		Timer timer;
-		int AmountOfLinesToClearToFinish = 10;
+		int AmountOfLinesToClearToFinish = 40;
 
 		// UIs
 		Tetris* tetris = nullptr;
+		UI::Delay delayCountdown;
 		UI::TetrisStatsHandler tetrisStatsHandler;
 		UI::Results resultsScreen;
 
@@ -36,6 +38,7 @@ namespace UI {
 		SDL_Scancode BackToMenuKey = SDL_SCANCODE_ESCAPE;
 
 		// states
+		bool started = false;
 		bool isShowing = false;
 		bool onReset = false;
 		bool onEsc = false;

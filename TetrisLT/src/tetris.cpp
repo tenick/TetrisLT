@@ -65,6 +65,9 @@ bool Tetris::IsFinished() {
 	return this->isFinished;
 }
 
+void Tetris::SetSeed(int newSeed) {
+	this->tetrominoHandler->SetSeed(newSeed);
+}
 
 void Tetris::OnFinish() {
 	this->isFinished = true;
