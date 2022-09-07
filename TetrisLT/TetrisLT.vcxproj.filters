@@ -120,6 +120,9 @@
     <ClCompile Include="src\UI\Delay.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\helpers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp">
@@ -240,6 +243,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\UI\Delay.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\helpers.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

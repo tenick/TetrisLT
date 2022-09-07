@@ -19,7 +19,7 @@ namespace UI {
 				this->tetris->OnFinish();
 
 				// setup results screen
-				this->resultsScreen.UpdateStats(this->tetris->GetStats());
+				this->resultsScreen.UpdateStats(this->tetrisStatsHandler.GetLastStats());
 				this->resultsScreen.Show();
 			}
 

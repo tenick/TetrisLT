@@ -154,6 +154,7 @@
     <ClCompile Include="imgui\imgui_impl_sdlrenderer.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\helpers.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UI\Delay.cpp" />
     <ClCompile Include="src\UI\Menu.cpp" />
@@ -184,6 +185,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp" />
+    <ClInclude Include="h\helpers.hpp" />
     <ClInclude Include="h\Randomizer\BagOf7.hpp" />
     <ClInclude Include="h\RotationSystem\Original.hpp" />
     <ClInclude Include="h\RotationSystem\RotationSystemBase.hpp" />

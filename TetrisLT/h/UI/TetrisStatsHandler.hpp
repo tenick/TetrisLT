@@ -15,13 +15,15 @@ namespace UI {
 		TetrisStatsHandler(SDL_Renderer*& renderCtx, const Timer& timer, const SDL_Rect& tetrisViewPort, const TetrisStats& tetrisStats);
 		void Render();
 		void Update();
+		const TetrisStats& GetLastStats() const;
 	private:
 		SDL_Renderer*& renderCtx;
 		const Timer& timer;
 		const TetrisStats& tetrisStats;
+		TetrisStats finalGameStats;
 		const SDL_Rect& tetrisViewPort;
-		std::string currTime = ""; // time in MM:SS format
-		std::string currPPS = "";
+		std::string strCurrTime = ""; // time in MM:SS format
+		std::string strCurrPPS = "";
 		TTF_Font* MainFont = NULL;
 	};
 }
