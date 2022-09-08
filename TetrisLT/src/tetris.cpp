@@ -100,6 +100,20 @@ void Tetris::Reset() {
 }
 
 void Tetris::Update() {
+	// check if lost (use block out top out condition)
+	TetrominoBase*& currTetromino = this->tetrominoHandler->GetCurrentTetromino();
+	auto& currRotState = currTetromino->GetCurrentRotationState();
+	for (int r = 0; r < currRotState.size(); r++) {
+		for (int c = 0; c < currRotState[r].size(); c++) {
+			int newR = r + currTetromino->RowOffset;
+			int newC = c + currTetromino->ColumnOffset;
+			if (currRotState[r][c] != _ && this->BoardState[newR][newC] != _) {
+				this->OnFinish();
+				return;
+			}
+		}
+	}
+
 	if (!this->isFinished)
 		this->tetrominoHandler->Update();
 }

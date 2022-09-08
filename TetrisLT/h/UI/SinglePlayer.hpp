@@ -7,6 +7,7 @@
 #include "Delay.hpp"
 #include "TetrisStatsHandler.hpp"
 #include "Results.hpp"
+#include "GameOver.hpp"
 
 namespace UI {
 	class SinglePlayer {
@@ -32,6 +33,7 @@ namespace UI {
 		UI::Delay delayCountdown;
 		UI::TetrisStatsHandler tetrisStatsHandler;
 		UI::Results resultsScreen;
+		UI::GameOver gameOverScreen;
 
 		// hotkeys
 		SDL_Scancode ResetKey = SDL_SCANCODE_R;

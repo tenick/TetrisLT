@@ -53,8 +53,8 @@ namespace UI {
 			auto windowSize = ImGui::GetWindowSize();
 			auto textSize = ImGui::CalcTextSize(strCurrCountdown.c_str());
 
-			ImGui::SetCursorPosX((windowSize.y - textSize.y) * 0.5f);
-			ImGui::SetCursorPosY((windowSize.x - textSize.x) * 0.5f);
+			ImGui::SetCursorPosX((windowSize.x - textSize.x) * 0.5f);
+			ImGui::SetCursorPosY((windowSize.y - textSize.y) * 0.5f);
 			ImGui::Text(strCurrCountdown.c_str());
 
 			ImGui::End();

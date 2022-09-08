@@ -51,7 +51,7 @@ namespace UI {
 			this->tetris->Update();
 			this->tetrisStatsHandler.Update();
 
-			// check if finished
+			// check if finished, and win game
 			if (this->tetris->GetStats().LinesCleared >= this->AmountOfLinesToClearToFinish) {
 				this->tetris->OnFinish();
 
@@ -60,6 +60,12 @@ namespace UI {
 				// setup results screen
 				this->resultsScreen.UpdateStats(this->tetrisStatsHandler.GetLastStats());
 				this->resultsScreen.Show();
+			}
+			else if (this->tetris->IsFinished()) { // check if topped out
+				this->delayCountdown.Show(3, 1000, false);
+
+				// show game over screen
+				this->gameOverScreen.Show();
 			}
 		}
 	}
@@ -84,7 +90,13 @@ namespace UI {
 
 		// results screen
 		if (this->resultsScreen.IsShowing()) {
-			resultsScreen.Render();
+			this->resultsScreen.Render();
+			return;
+		}
+
+		// gameover screen
+		if (this->gameOverScreen.IsShowing()) {
+			this->gameOverScreen.Render();
 			return;
 		}
 
