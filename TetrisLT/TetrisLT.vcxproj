@@ -121,6 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,6 +137,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,7 +156,11 @@
     <ClCompile Include="imgui\imgui_impl_sdlrenderer.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
+    <ClCompile Include="src\Configuration.cpp" />
+    <ClCompile Include="src\GameStatesFileHandler.cpp" />
     <ClCompile Include="src\helpers.cpp" />
+    <ClCompile Include="src\SDLEventHandler.cpp" />
+    <ClCompile Include="src\TetrisSettingsFileHandler.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UI\Delay.cpp" />
     <ClCompile Include="src\UI\GameOver.cpp" />
@@ -185,6 +191,8 @@
     <ClCompile Include="src\UI\TetrisStatsHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="h\Configuration.hpp" />
+    <ClInclude Include="h\SDLEventHandler.hpp" />
     <ClInclude Include="h\game.hpp" />
     <ClInclude Include="h\helpers.hpp" />
     <ClInclude Include="h\Randomizer\BagOf7.hpp" />
@@ -199,7 +207,7 @@
     <ClInclude Include="h\Tetromino\O.hpp" />
     <ClInclude Include="h\Tetromino\S.hpp" />
     <ClInclude Include="h\Tetromino\T.hpp" />
-    <ClInclude Include="h\Tetromino\TetrisSettings.hpp" />
+    <ClInclude Include="h\TetrisSettingsFileHandler.hpp" />
     <ClInclude Include="h\Tetromino\TetrisStats.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoBase.hpp" />
     <ClInclude Include="h\Tetromino\TetrominoEnum.hpp" />
@@ -212,6 +220,7 @@
     <ClInclude Include="h\Timer.hpp" />
     <ClInclude Include="h\UI\Delay.hpp" />
     <ClInclude Include="h\UI\GameOver.hpp" />
+    <ClInclude Include="h\GameStatesFileHandler.hpp" />
     <ClInclude Include="h\UI\Menu.hpp" />
     <ClInclude Include="h\UI\Multiplayer.hpp" />
     <ClInclude Include="h\UI\Resources.hpp" />
@@ -234,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui\imgui.ini" />
+    <None Include="state.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,13 +1,21 @@
 #include "../h/game.hpp"
 
+#include "../h/TetrisSettingsFileHandler.hpp"
+#include "../h/GameStatesFileHandler.hpp"
+#include "../h/Configuration.hpp"
 #include "../h/tetris.hpp"
+#include "../h/SDLEventHandler.hpp"
 #include "../h/UI/Resources.hpp"
 
 #include "../imgui/imgui.h"
 #include "../imgui/imgui_impl_sdl.h"
 #include "../imgui/imgui_impl_sdlrenderer.h"
 
+
 #include <iostream>
+#include <fstream>
+#include <filesystem>
+
 
 Game::Game()
 {
@@ -34,7 +42,7 @@ Game::Game()
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
 
-    // load resources
+    // SECTION ------------- load resources
     Resources::io = &ImGui::GetIO();
     Resources::style = &ImGui::GetStyle();
 
@@ -45,6 +53,53 @@ Game::Game()
     Resources::fontB64 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 64.0f);
     Resources::fontB128 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 128.0f);
 
+    // SECTION ------------- load configurations
+    // load last setting .ini 
+    // load config file
+    // create config directory first to avoid errors
+    std::filesystem::create_directory("config");
+
+    Configuration::LoadedTetrisSettings = new std::vector<TetrisSettingsFileHandler>();
+    for (const auto& entry : std::filesystem::directory_iterator("config")) {
+        const std::filesystem::path& file = entry.path();
+        if (file.extension() == ".ini") {
+            TetrisSettingsFileHandler tetrisSetting;
+            bool loadingResultSuccessful = tetrisSetting.LoadFromFile(file.string());
+            if (loadingResultSuccessful) Configuration::LoadedTetrisSettings->push_back(tetrisSetting);
+        }
+    }
+
+    // if no tetris settings is loaded, create default
+    if (Configuration::LoadedTetrisSettings->size() == 0) {
+        TetrisSettingsFileHandler defaultSettings;
+        defaultSettings.WriteToFile();
+        Configuration::LoadedTetrisSettings->push_back(defaultSettings);
+    }
+
+    // load last game states
+    Configuration::LastGameStates = new GameStatesFileHandler;
+    bool gameStateLoadingSuccessful = Configuration::LastGameStates->LoadFromFile();
+    if (!gameStateLoadingSuccessful) {
+        // default settings
+        Configuration::LastGameStates->SelectedTetrisSettingName = Configuration::LoadedTetrisSettings->at(Configuration::LoadedTetrisSettings->size() - 1).SettingName;
+        Configuration::LastGameStates->WriteToFile();
+    }
+    else {
+        // check if setting name exists in loaded tetris settings
+        // if no name exists, set name to last setting in loaded tetris settings
+        bool found = false;
+        for (auto& tetrisSetting : *Configuration::LoadedTetrisSettings) {
+            if (Configuration::LastGameStates->SelectedTetrisSettingName == tetrisSetting.SettingName) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            Configuration::LastGameStates->SelectedTetrisSettingName = Configuration::LoadedTetrisSettings->at(Configuration::LoadedTetrisSettings->size() - 1).SettingName;
+            Configuration::LastGameStates->WriteToFile();
+        }
+    }
+
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -53,7 +108,6 @@ Game::Game()
     // Setup Platform/Renderer backends
     ImGui_ImplSDL2_InitForSDLRenderer(this->window, this->renderer);
     ImGui_ImplSDLRenderer_Init(this->renderer);
-
 
 
     // SECTION ------------ init the members (UIs)
@@ -80,9 +134,18 @@ void Game::Start() {
             switch (this->e.type) {
                 case SDL_QUIT:
                     this->quit = true;
+
+                    // save current game state to file
+                    Configuration::LastGameStates->WriteToFile();
                     break;
                 case SDL_WINDOWEVENT:
                     this->mainMenu->OnWindowEvent();
+                    break;
+                case SDL_KEYDOWN:
+                    SDLEventHandler::CurrentKeyDown = this->e.key.keysym.scancode;
+                    break;
+                case SDL_KEYUP:
+                    SDLEventHandler::CurrentKeyDown = SDL_SCANCODE_UNKNOWN;
                     break;
             }
         }
@@ -165,6 +228,8 @@ void Game::loadTextureToScreen(std::string path) {
 
 Game::~Game() {
     delete this->mainMenu;
+    delete Configuration::LoadedTetrisSettings;
+    delete Configuration::LastGameStates;
 
     //Destroy window
     SDL_DestroyWindow(this->window);

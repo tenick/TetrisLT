@@ -22,16 +22,13 @@ namespace UI {
         SDL_Renderer* renderCtx;
 
         // UIs
-        UI::SinglePlayer* singl = nullptr;
-        UI::Multiplayer* mult = nullptr;
+        SinglePlayer* singl = nullptr;
+        Multiplayer* mult = nullptr;
+        TetrisConfig tetrisConfigUI;
 
         bool showMenu = true;
         bool LANClicked = true;
         bool WANClicked = false;
-        
-
-        // other UI managed by menu
-        TetrisConfig tetrisConfigUI;
 	};
 
 }

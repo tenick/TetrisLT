@@ -1,10 +1,14 @@
 #ifndef TETRIS_CONFIG_H
 #define TETRIS_CONFIG_H
 
+#include "../../h/TetrisSettingsFileHandler.hpp"
+
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_impl_sdl.h"
 #include "../../imgui/imgui_impl_sdlrenderer.h"
 
+#include <SDL.h>
+#include <string>
 
 namespace UI {
 
@@ -15,20 +19,24 @@ namespace UI {
 		bool IsShowing();
 		void Render();
 	private:
+		void Save();
+		void New();
+		void Delete();
+		void Rename();
+
+		bool isSettingKey = false;
+		SDL_Scancode* keyToSet = nullptr;
 		bool isShowing = false;
-		char name[100] = "";
-		char profileName[100] = "";
-		int das = 5;
-		int arr = 5;
-		int sds = 5;
-		int gravity = 5;
-		int delayAfterLocking = 100;
-		int lockDelay = 100;
-		int lockDelayLimit = 15;
-		bool enableGhostPiece;
-		int boardWidth = 10;
-		int boardHeight = 20;
-		int vanishingZoneHeight = 20;
+		bool hasError = false;
+		std::string errorMsg = "";
+		int comboBoxIndexSelected = 0;
+		char newSettingsBuffer[100] = "";
+		char renameSettingNameBuffer[100] = "";
+		char playerNameBuffer[100] = "";
+		std::string previewComboBox;
+
+
+		TetrisSettingsFileHandler replacementSetting;
 	};
 }
 

@@ -126,6 +126,18 @@
     <ClCompile Include="src\UI\GameOver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\GameStatesFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TetrisSettingsFileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Configuration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SDLEventHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="h\game.hpp">
@@ -239,7 +251,7 @@
     <ClInclude Include="h\Tetromino\TetrisStats.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="h\Tetromino\TetrisSettings.hpp">
+    <ClInclude Include="h\TetrisSettingsFileHandler.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="h\UI\Results.hpp">
@@ -254,6 +266,15 @@
     <ClInclude Include="h\UI\GameOver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="h\GameStatesFileHandler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\Configuration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="h\SDLEventHandler.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Font Include="fonts\Silkscreen-Bold.ttf" />
@@ -261,5 +282,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="imgui\imgui.ini" />
+    <None Include="state.ini" />
   </ItemGroup>
 </Project>
