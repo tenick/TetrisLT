@@ -242,8 +242,12 @@
     <Font Include="fonts\Silkscreen-Regular.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="assets\CustomizingAssets.md" />
     <None Include="imgui\imgui.ini" />
     <None Include="state.ini" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\tetrominoes.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

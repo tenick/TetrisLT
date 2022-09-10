@@ -1,6 +1,7 @@
 #include "../h/tetris.hpp"
 
 #include "../h/Tetromino/TetrominoHelpers.hpp"
+#include "../h/UI/Resources.hpp"
 
 #include <iostream>
 #include <string>
@@ -131,7 +132,7 @@ void Tetris::Render() {
 	boardBG.h = this->playfieldViewport.h;
 	boardBG.x = boardBG.w / 2;
 	boardBG.y = 0;
-	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xff);
+	SDL_SetRenderDrawColor(this->renderContext, 20, 20, 20, 0xff);
 	SDL_RenderFillRectF(this->renderContext, &boardBG);
 
 
@@ -157,7 +158,7 @@ void Tetris::Render() {
 		for (int c = 0; c < this->COLUMNS; c++) {
 			TetrominoEnum currCell = this->BoardState[r][c];
 			if (currCell == _)
-				SDL_SetRenderDrawColor(this->renderContext, 0xBB, 0xBB, 0xBB, 0xFF);
+				SDL_SetRenderDrawColor(this->renderContext, 0x88, 0x88, 0x88, 0xFF);
 			else {
 				uint8_t r, g, b, a;
 				Tetromino::EnumToRGBA(currCell, r, g, b, a);
@@ -166,11 +167,15 @@ void Tetris::Render() {
 
 			cellRect.x = boardBG.x + boardXYPadding.x + c * cellRect.w;
 			cellRect.y = boardBG.y + boardXYPadding.y + r * cellRect.h;
-			SDL_RenderFillRectF(this->renderContext, &cellRect);
+
+			if (Resources::tetrominoesTexture != NULL && currCell != _)
+				Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
+			else 
+				SDL_RenderFillRectF(this->renderContext, &cellRect);
 		}
 	}
-		// draw over board to represent vanish zone (black bg)
-	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
+		// draw over board to represent vanish zone (almost black bg)
+	SDL_SetRenderDrawColor(this->renderContext, 20, 20, 20, 0xFF);
 	for (int r = 0; r < this->VANISHZONEHEIGHT; r++) {
 		for (int c = 0; c < this->COLUMNS; c++) {
 			TetrominoEnum currCell = this->BoardState[r][c];
@@ -212,7 +217,11 @@ void Tetris::Render() {
 			if (currCell != _) {
 				cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
 				cellRect.y = boardBG.y + boardXYPadding.y + (currentRowOffset + r) * cellRect.h;
-				SDL_RenderFillRectF(this->renderContext, &cellRect);
+
+				if (Resources::tetrominoesTexture != NULL)
+					Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
+				else
+					SDL_RenderFillRectF(this->renderContext, &cellRect);
 			}
 		}
 	}
@@ -233,7 +242,15 @@ void Tetris::Render() {
 				if (currCell != _) {
 					cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
 					cellRect.y = boardBG.y + boardXYPadding.y + (resultingRowOffset + r) * cellRect.h;
-					SDL_RenderFillRectF(this->renderContext, &cellRect);
+
+					if (Resources::tetrominoesTexture != NULL) {
+						SDL_SetTextureBlendMode(Resources::tetrominoesTexture, SDL_BLENDMODE_BLEND);
+						SDL_SetTextureAlphaMod(Resources::tetrominoesTexture, 100);
+						Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
+						SDL_SetTextureBlendMode(Resources::tetrominoesTexture, SDL_BLENDMODE_NONE);
+					}
+					else
+						SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
 		}
@@ -247,7 +264,7 @@ void Tetris::Render() {
 	holdPieceBG.h = this->playfieldViewport.h - cellRect.h * 4;
 	holdPieceBG.x = 0;
 	holdPieceBG.y = cellRect.h * 4;
-	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(this->renderContext, 20, 20, 20, 0xFF);
 	SDL_RenderFillRectF(this->renderContext, &holdPieceBG);
 
 	// 1 piece area, for hold piece and next 5 pieces, should be 1/6 of the height ^2
@@ -271,7 +288,11 @@ void Tetris::Render() {
 				if (currCell != _) {
 					cellRect.x = c * cellRect.w + ((holdPieceBG.w - holdTetrominoState[0].size() * cellRect.w) / 2);
 					cellRect.y = r * cellRect.h + holdPieceBG.y;
-					SDL_RenderFillRectF(this->renderContext, &cellRect);
+
+					if (Resources::tetrominoesTexture != NULL)
+						Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
+					else
+						SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
 		}
@@ -285,7 +306,7 @@ void Tetris::Render() {
 	next5PiecesBG.h = holdPieceBG.h;
 	next5PiecesBG.x = holdPieceBG.w + boardBG.w;
 	next5PiecesBG.y = holdPieceBG.y;
-	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(this->renderContext, 20, 20, 20, 0xFF);
 	SDL_RenderFillRectF(this->renderContext, &next5PiecesBG);
 
 	const std::array<TetrominoEnum, 5> next5Tetrominos = this->tetrominoHandler->PeekNext5Tetrominos();
@@ -304,7 +325,11 @@ void Tetris::Render() {
 				if (currCell != _) {
 					cellRect.x = next5PiecesBG.x + c * cellRect.w;
 					cellRect.y = next5PiecesBG.y + r * cellRect.h + i * holdAndNext5PiecesArea.h;
-					SDL_RenderFillRectF(this->renderContext, &cellRect);
+
+					if (Resources::tetrominoesTexture != NULL)
+						Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
+					else
+						SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
 		}

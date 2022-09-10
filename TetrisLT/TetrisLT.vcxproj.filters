@@ -283,5 +283,11 @@
   <ItemGroup>
     <None Include="imgui\imgui.ini" />
     <None Include="state.ini" />
+    <None Include="assets\CustomizingAssets.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\tetrominoes.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

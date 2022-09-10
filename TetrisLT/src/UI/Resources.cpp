@@ -11,4 +11,8 @@ namespace Resources {
     ImFont* fontB32 = nullptr;
     ImFont* fontB64 = nullptr;
     ImFont* fontB128 = nullptr;
+
+    // load textures
+    SDL_Texture* tetrominoesTexture = NULL;
+
 }

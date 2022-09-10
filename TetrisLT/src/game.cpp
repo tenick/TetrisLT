@@ -53,6 +53,43 @@ Game::Game()
     Resources::fontB64 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 64.0f);
     Resources::fontB128 = Resources::io->Fonts->AddFontFromFileTTF("fonts/Silkscreen-Bold.ttf", 128.0f);
 
+    const char* terominoesTextureBMPPath = "assets/tetrominoes.bmp";
+    if (std::filesystem::exists(terominoesTextureBMPPath)) {
+        //The final texture
+        SDL_Texture* newTexture = NULL;
+
+        //Load image at specified path
+        SDL_Surface* loadedSurface = SDL_LoadBMP(terominoesTextureBMPPath);
+        if (loadedSurface == NULL)
+        {
+            printf("Unable to load image %s! SDL_image Error: %s\n", terominoesTextureBMPPath, SDL_GetError());
+        }
+        else {
+            //Create texture from surface pixels
+            newTexture = SDL_CreateTextureFromSurface(this->renderer, loadedSurface);
+            if (newTexture == NULL)
+            {
+                printf("Unable to create texture from %s! SDL Error: %s\n", terominoesTextureBMPPath, SDL_GetError());
+            }
+
+            //Get rid of old optimized surface
+            SDL_FreeSurface(loadedSurface);
+        }
+
+        // check if size and ratio is exactly 192x24 and 8:1, don't load otherwise
+        if (newTexture != NULL) {
+            int textureW, textureH;
+            SDL_QueryTexture(newTexture, NULL, NULL, &textureW, &textureH);
+            
+            if (textureW != 192 || textureH != 24) {
+                SDL_DestroyTexture(newTexture);
+                newTexture = NULL;
+            }
+        }
+
+        Resources::tetrominoesTexture = newTexture;
+    }
+
     // SECTION ------------- load configurations
     // load last setting .ini 
     // load config file
@@ -169,7 +206,7 @@ void Game::Start() {
         ImGui::NewFrame();
 
         // clear renderer
-        SDL_SetRenderDrawColor(this->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(this->renderer, 20, 20, 20, 255);
         SDL_RenderClear(this->renderer);
 
         // draw UI
@@ -230,6 +267,8 @@ Game::~Game() {
     delete this->mainMenu;
     delete Configuration::LoadedTetrisSettings;
     delete Configuration::LastGameStates;
+
+    SDL_DestroyTexture(Resources::tetrominoesTexture);
 
     //Destroy window
     SDL_DestroyWindow(this->window);

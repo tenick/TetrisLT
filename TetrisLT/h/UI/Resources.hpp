@@ -2,6 +2,7 @@
 #define RESOURCES_H
 
 #include "../../imgui/imgui.h"
+#include <SDL.h>
 
 namespace Resources {
     extern ImGuiIO* io;
@@ -14,6 +15,9 @@ namespace Resources {
     extern ImFont* fontB32;
     extern ImFont* fontB64;
     extern ImFont* fontB128;
+
+    // load textures
+    extern SDL_Texture* tetrominoesTexture;
 }
 
 #endif

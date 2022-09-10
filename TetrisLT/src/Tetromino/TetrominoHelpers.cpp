@@ -34,7 +34,7 @@ namespace Tetromino {
 		case Z_:
 			R = 0xFF; G = 0x00; B = 0x00; A = 0xFF; break; // red
 		case G_:
-			R = 0x21; G = 0x21; B = 0x21; A = 0xFF; break; // dark gray
+			R = 0xC8; G = 0xC8; B = 0xC8; A = 0xFF; break; // gray (200b10)
 		}
 	}
 
@@ -70,5 +70,12 @@ namespace Tetromino {
 			}
 		}
 		return true;
+	}
+
+	void RenderTexture(SDL_Renderer* renderCtx, SDL_Texture* texture, SDL_FRect* renderRect, TetrominoEnum tetromino) {
+		SDL_Rect srcRect {0, 0, 24, 24};
+		srcRect.x = (tetromino - 1) * 24;
+		
+		SDL_RenderCopyF(renderCtx, texture, &srcRect, renderRect);
 	}
 }
