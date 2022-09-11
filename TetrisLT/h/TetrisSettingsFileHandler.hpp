@@ -9,13 +9,12 @@
 
 struct TetrisSettingsFileHandler {
 	std::string SettingName = std::string("Setting#") + std::to_string(std::mt19937(time(NULL))() % 9999);
-	std::string OldSettingName = SettingName;
 	
 	std::string PlayerName = std::string("Guest#") + std::to_string(std::mt19937(time(NULL))() % 9999);
 
 	int DAS = 180; // Delayed Auto Shift (ms)
 	int ARR = 50;  // Auto Repeat Rate (ms)
-	int SDS = 200;  // Soft Drop Speed (ms)
+	int SDS = 120;  // Soft Drop Speed (ms)
 	int Gravity = 500; // Automatic dropping speed (ms)
 	int LockDelay = 500; // Delay before locking tetromino in place (ms)
 	int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
@@ -23,7 +22,7 @@ struct TetrisSettingsFileHandler {
 
 	int BoardWidth = 10;
 	int BoardHeight = 20;
-	int VanishingZoneHeight = 20;
+	int VanishingZoneHeight = 4;
 	bool EnableGhostPiece = true;
 
 	SDL_Scancode MoveLeft = SDL_SCANCODE_LEFT;

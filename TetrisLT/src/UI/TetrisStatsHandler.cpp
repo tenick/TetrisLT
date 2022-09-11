@@ -49,7 +49,7 @@ namespace UI {
 		// username text
 		// calculate ratio of text to container width to make sure text fits its container (holdPieceArea)
 		int tw, th;
-		TTF_SizeText(this->MainFont, "Kenneth", &tw, &th);
+		TTF_SizeText(this->MainFont, this->tetrisStats.PlayerName.c_str(), &tw, &th);
 		float twRatio = containerWidth / tw;
 		float thRatio = (float)th / tw;
 		float newTw = twRatio * tw;
@@ -57,7 +57,7 @@ namespace UI {
 		float usernameHeight = newTh;
 		SDL_FRect textRect{ 0, containerHeight / 3, newTw, newTh };
 
-		SDL_Surface* textSurface = TTF_RenderText_Solid(this->MainFont, "Kenneth", { 255,255,255,255 });
+		SDL_Surface* textSurface = TTF_RenderText_Solid(this->MainFont, this->tetrisStats.PlayerName.c_str(), { 255,255,255,255 });
 
 		//Create texture from surface pixels
 		SDL_Texture* textTexture = SDL_CreateTextureFromSurface(this->renderCtx, textSurface);

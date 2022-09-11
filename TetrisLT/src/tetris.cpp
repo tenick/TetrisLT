@@ -94,7 +94,6 @@ void Tetris::Reset() {
 	// reinitialize board
 	this->BoardState = std::vector<std::vector<TetrominoEnum>>(this->ROWS + this->VANISHZONEHEIGHT, std::vector<TetrominoEnum>(this->COLUMNS, _));
 
-
 	this->tetrominoHandler->Reset();
 
 	this->isFinished = false;

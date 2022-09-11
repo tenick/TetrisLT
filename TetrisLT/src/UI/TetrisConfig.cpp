@@ -119,6 +119,9 @@ namespace UI {
                     this->replacementSetting = tetrisSetting;
                     strcpy_s(this->renameSettingNameBuffer, tetrisSetting.SettingName.c_str());
                     strcpy_s(this->playerNameBuffer, tetrisSetting.PlayerName.c_str());
+
+                    // update selected tetris setting game state
+                    Configuration::LastGameStates->SelectedTetrisSettingName = this->previewComboBox;
                 }
 
                 // Set the initial focus when opening the combo (scrolling + keyboard navigation focus)

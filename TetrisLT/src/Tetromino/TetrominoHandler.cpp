@@ -31,6 +31,8 @@ namespace Tetromino {
 		gravityStartTime = SDL_GetTicks64();
 		this->BoardHeight = BoardState.size();
 		this->BoardWidth = BoardState[0].size();
+
+		this->tetrisStats.PlayerName = this->TetrisSettings.PlayerName;
 	}
 
 	void TetrominoHandler::SetSeed(int newSeed) {
@@ -47,6 +49,7 @@ namespace Tetromino {
 
 		// reset stats
 		this->tetrisStats = TetrisStats();
+		this->tetrisStats.PlayerName = this->TetrisSettings.PlayerName;
 
 		// reset board size
 		this->BoardHeight = BoardState.size();

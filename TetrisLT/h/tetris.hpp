@@ -38,7 +38,7 @@ private:
 	SDL_Renderer* renderContext;
 	
 	// tetris settings
-	TetrisSettingsFileHandler& TetrisSettings = Configuration::CurrentSelectedTetrisSetting();
+	TetrisSettingsFileHandler TetrisSettings = Configuration::CurrentSelectedTetrisSetting();
 
 	int& ROWS = TetrisSettings.BoardHeight;
 	int& COLUMNS = TetrisSettings.BoardWidth;

@@ -10,7 +10,7 @@ namespace Configuration {
     // game states and loaded settings
     extern std::vector<TetrisSettingsFileHandler>* LoadedTetrisSettings;
     extern GameStatesFileHandler* LastGameStates;
-    TetrisSettingsFileHandler& CurrentSelectedTetrisSetting();
+    TetrisSettingsFileHandler CurrentSelectedTetrisSetting();
 }
 
 #endif
