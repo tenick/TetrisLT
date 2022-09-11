@@ -3,6 +3,7 @@
 
 #include "../../imgui/imgui.h"
 #include <SDL.h>
+#include <SDL_mixer.h>
 
 namespace Resources {
     extern ImGuiIO* io;
@@ -18,6 +19,11 @@ namespace Resources {
 
     // load textures
     extern SDL_Texture* tetrominoesTexture;
+
+    // load audio assets
+    extern Mix_Chunk* lockSfx;
+    extern Mix_Chunk* lineClearSfx;
+    extern Mix_Chunk* countdownTickSfx;
 }
 
 #endif

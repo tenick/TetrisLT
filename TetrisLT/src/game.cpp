@@ -11,6 +11,7 @@
 #include "../imgui/imgui_impl_sdl.h"
 #include "../imgui/imgui_impl_sdlrenderer.h"
 
+#include <SDL_mixer.h>
 
 #include <iostream>
 #include <fstream>
@@ -19,14 +20,18 @@
 
 Game::Game()
 {
-    // SETUP SDL
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0)
+    // SETUP/INIT SDL and SDL Libraries
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         printf("Error: %s\n", SDL_GetError());
         return;
     }
     TTF_Init();
-
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+        return;
+    }
 
     // SECTION ------------ init the members
     this->window = SDL_CreateWindow("TetrisL2",
@@ -89,6 +94,12 @@ Game::Game()
 
         Resources::tetrominoesTexture = newTexture;
     }
+
+    // Load sound effects
+    Resources::lockSfx = Mix_LoadWAV("assets/sfx/lock.wav");
+    Resources::lineClearSfx = Mix_LoadWAV("assets/sfx/line_clear.wav");
+    Resources::countdownTickSfx = Mix_LoadWAV("assets/sfx/countdown_tick.wav");
+
 
     // SECTION ------------- load configurations
     // load last setting .ini 
@@ -267,6 +278,9 @@ Game::~Game() {
     delete this->mainMenu;
     delete Configuration::LoadedTetrisSettings;
     delete Configuration::LastGameStates;
+
+    //free the audio
+    Mix_FreeChunk(Resources::lockSfx);
 
     SDL_DestroyTexture(Resources::tetrominoesTexture);
 

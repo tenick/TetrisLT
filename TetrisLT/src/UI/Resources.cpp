@@ -15,4 +15,8 @@ namespace Resources {
     // load textures
     SDL_Texture* tetrominoesTexture = NULL;
 
+    // load audio assets
+    Mix_Chunk* lockSfx = NULL;
+    Mix_Chunk* lineClearSfx = NULL;
+    Mix_Chunk* countdownTickSfx = NULL;
 }

@@ -1,10 +1,12 @@
 #include "../../h/UI/Delay.hpp"
 
+#include "../../h/UI/Resources.hpp"
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_impl_sdl.h"
 #include "../../imgui/imgui_impl_sdlrenderer.h"
 
 #include <SDL.h>
+#include <SDL_mixer.h>
 
 #include <iostream>
 #include <string>
@@ -38,6 +40,13 @@ namespace UI {
 
 			int ticksPassed = currTick / this->tickDurationInMS;
 			int currCountdown = this->ticks - ticksPassed;
+
+			// play countdown tick sfx
+			if (this->currCountdownState != currCountdown) {
+				Mix_PlayChannel(0, Resources::countdownTickSfx, 0);
+				this->currCountdownState = currCountdown;
+			}
+
 			std::string strCurrCountdown = std::to_string(currCountdown);
 
 			// render countdown

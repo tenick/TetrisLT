@@ -9,8 +9,12 @@
 #include "../../h/Tetromino/Z.hpp"
 #include "../../h/Tetromino/TetrominoHelpers.hpp"
 
-#include "SDL.h"
+#include "../../h/UI/Resources.hpp"
 
+#include <SDL.h>
+#include <SDL_mixer.h>
+
+#include <iostream>
 #include <time.h>
 
 namespace Tetromino {
@@ -124,6 +128,9 @@ namespace Tetromino {
 			}
 		}
 
+		// play lock sfx
+		Mix_PlayChannel(0, Resources::lockSfx, 0);
+
 		// clear lines
 		std::vector<std::vector<TetrominoEnum>> newBoard(this->BoardHeight, std::vector<TetrominoEnum>(this->BoardWidth, _));
 		int rowToAdd = 0;
@@ -141,6 +148,11 @@ namespace Tetromino {
 			else
 				rowToAdd++;
 		}
+
+		// play line clear SFX
+		if (rowToAdd != 0)
+			Mix_PlayChannel(1, Resources::lineClearSfx, 0);
+
 		this->BoardState = newBoard;
 
 		this->Next();

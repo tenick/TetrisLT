@@ -20,6 +20,8 @@ namespace UI {
 		int tickDurationInMS = 3;
 		bool showCountdown = true;
 		bool isShowing = false;
+
+		int currCountdownState = 0;
 	};
 }
 
