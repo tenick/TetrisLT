@@ -3,6 +3,7 @@
 
 #include "../tetris.hpp"
 
+#include "../../h/Configuration.hpp"
 #include "../Timer.hpp"
 #include "Delay.hpp"
 #include "TetrisStatsHandler.hpp"
@@ -36,8 +37,8 @@ namespace UI {
 		UI::GameOver gameOverScreen;
 
 		// hotkeys
-		SDL_Scancode ResetKey = SDL_SCANCODE_R;
-		SDL_Scancode BackToMenuKey = SDL_SCANCODE_ESCAPE;
+		const SDL_Scancode& ResetKey = Configuration::LastGameStates->ResetKey;
+		const SDL_Scancode& BackToMenuKey = Configuration::LastGameStates->QuitKey;
 
 		// states
 		bool started = false;

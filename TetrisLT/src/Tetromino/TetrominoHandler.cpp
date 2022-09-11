@@ -18,16 +18,19 @@
 #include <time.h>
 
 namespace Tetromino {
-	TetrominoHandler::TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState,
+	TetrominoHandler::TetrominoHandler(const TetrisSettingsFileHandler& tetrisSettings,
+									   std::vector<std::vector<TetrominoEnum>>& boardState,
 									   Randomizer::RandomizerBase* randomizer,
 									   RotationSystem::RotationSystemBase* rotationSystemBase)
-		:   BoardState(boardState),
-			BoardHeight(boardState.size()), BoardWidth(boardState[0].size()),
+		:	TetrisSettings(tetrisSettings),
+		    BoardState(boardState),
 			randomizer(randomizer),
 			rotationSystem(rotationSystemBase),
 			currentTetromino(EnumToTetromino(randomizer->Next()))
 	{
 		gravityStartTime = SDL_GetTicks64();
+		this->BoardHeight = BoardState.size();
+		this->BoardWidth = BoardState[0].size();
 	}
 
 	void TetrominoHandler::SetSeed(int newSeed) {
@@ -44,6 +47,10 @@ namespace Tetromino {
 
 		// reset stats
 		this->tetrisStats = TetrisStats();
+
+		// reset board size
+		this->BoardHeight = BoardState.size();
+		this->BoardWidth = BoardState[0].size();
 
 		// reset states
 		this->onHarddrop = false;
@@ -198,14 +205,12 @@ namespace Tetromino {
 		// handle keyboard
 		static const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-		// TODO: UI
 		// TODO: Multiplayer
 		// TODO: Loss conditions
 		// TODO: Scoring
-		// TODO: Skin customization
 
 		// gravity
-		if (SDL_GetTicks64() - gravityStartTime >= this->Gravity) {
+		if (!this->SDSActivated && SDL_GetTicks64() - gravityStartTime >= this->Gravity) {
 			if (!this->Move(M_D))
 				this->StartLockDelay();
 			else {
@@ -273,6 +278,8 @@ namespace Tetromino {
 
 				this->currentSDS = SDL_GetTicks64();
 			}
+
+			gravityStartTime = SDL_GetTicks64();
 		}
 		else {
 			this->SDSActivated = false;

@@ -36,8 +36,6 @@ bool TetrisSettingsFileHandler::LoadFromFile(std::string fileName) {
 		if (file.is_open()) {
 			std::string line;
 			while (std::getline(file, line)) {
-				// using printf() in all tests for consistency
-
 				// parse line
 				std::string delim = "=";
 				std::vector<std::string> result;

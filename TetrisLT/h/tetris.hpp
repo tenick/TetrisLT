@@ -1,6 +1,8 @@
 #ifndef TETRIS_H
 #define TETRIS_H
 
+#include "TetrisSettingsFileHandler.hpp"
+#include "../h/Configuration.hpp"
 #include "Tetromino/TetrominoEnum.hpp"
 #include "Tetromino/TetrominoHandler.hpp"
 #include "Tetromino/TetrisStats.hpp"
@@ -11,7 +13,7 @@
 
 class Tetris {
 public:
-	Tetris(SDL_Window*& windowContext, int rows = 20, int columns = 10, int vanishZoneHeight=4);
+	Tetris(SDL_Window*& windowContext);
 
 	void Update();
 	void Reset();
@@ -30,18 +32,22 @@ private:
 	TTF_Font* MainFont = NULL;
 
 	// states
-	bool isGhostPieceEnabled = true;
 	bool isFinished = false;
 
 	SDL_Window*& windowContext;
 	SDL_Renderer* renderContext;
 	
-	const int ROWS;
-	const int COLUMNS;
-	const int VANISHZONEHEIGHT;
+	// tetris settings
+	TetrisSettingsFileHandler& TetrisSettings = Configuration::CurrentSelectedTetrisSetting();
 
+	int& ROWS = TetrisSettings.BoardHeight;
+	int& COLUMNS = TetrisSettings.BoardWidth;
+	int& VANISHZONEHEIGHT = TetrisSettings.VanishingZoneHeight;
+
+	bool& isGhostPieceEnabled = TetrisSettings.EnableGhostPiece;
+	
+	// playfield
 	std::vector<std::vector<Tetromino::TetrominoEnum>> BoardState;
-
 	Tetromino::TetrominoHandler* tetrominoHandler;
 
 	SDL_Rect playfieldViewport;

@@ -1,4 +1,5 @@
 #include "../../h/UI/SinglePlayer.hpp"
+
 #include "../../imgui/imgui.h"
 #include "../../imgui/imgui_impl_sdl.h"
 #include "../../imgui/imgui_impl_sdlrenderer.h"
@@ -55,14 +56,14 @@ namespace UI {
 			if (this->tetris->GetStats().LinesCleared >= this->AmountOfLinesToClearToFinish) {
 				this->tetris->OnFinish();
 
-				this->delayCountdown.Show(3, 1000, false);
+				this->delayCountdown.Show(1, Configuration::LastGameStates->GameFinishDelayMS, false);
 
 				// setup results screen
 				this->resultsScreen.UpdateStats(this->tetrisStatsHandler.GetLastStats());
 				this->resultsScreen.Show();
 			}
 			else if (this->tetris->IsFinished()) { // check if topped out
-				this->delayCountdown.Show(3, 1000, false);
+				this->delayCountdown.Show(1, Configuration::LastGameStates->GameFinishDelayMS, false);
 
 				// show game over screen
 				this->gameOverScreen.Show();
@@ -128,7 +129,8 @@ namespace UI {
 		this->isShowing = true;
 		this->tetris->SetSeed(std::time(NULL));
 		this->tetris->Reset();
-		this->delayCountdown.Show(3, 1000, true);
+		this->delayCountdown.Show(Configuration::LastGameStates->StartCountdownTicks, 
+								  Configuration::LastGameStates->StartCountdownTickDurationMS, true);
 	}
 
 	void SinglePlayer::Hide() {
@@ -139,7 +141,8 @@ namespace UI {
 	bool SinglePlayer::IsShowing() { return this->isShowing; }
 
 	void SinglePlayer::Reset() {
-		this->delayCountdown.Show(3, 400, true);
+		this->delayCountdown.Show(Configuration::LastGameStates->ResetCountdownTicks,
+								  Configuration::LastGameStates->ResetCountdownTickDurationMS, true);
 		
 		this->timer.Restart();
 		this->tetris->SetSeed(std::time(NULL));

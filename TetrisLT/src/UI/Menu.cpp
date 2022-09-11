@@ -32,6 +32,11 @@ namespace UI {
             return;
         }
 
+        if (this->gameConfigUI.IsShowing()) {
+            this->gameConfigUI.Render();
+            return;
+        }
+
         // menu
         const ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos(viewport->Pos);
@@ -94,6 +99,7 @@ namespace UI {
         if (ImGui::IsItemClicked()) this->tetrisConfigUI.Show();
 
         ImGui::Button("Game", { ImGui::GetWindowSize().x - Resources::style->WindowPadding.x * 2, ImGui::GetFontSize() });
+        if (ImGui::IsItemClicked()) this->gameConfigUI.Show();
 
 
         ImGui::End();

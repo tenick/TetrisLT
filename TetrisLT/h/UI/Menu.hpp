@@ -8,6 +8,7 @@
 #include "SinglePlayer.hpp"
 #include "Multiplayer.hpp"
 #include "TetrisConfig.hpp"
+#include "GameConfig.hpp"
 
 namespace UI {
 	class Menu {
@@ -25,6 +26,7 @@ namespace UI {
         SinglePlayer* singl = nullptr;
         Multiplayer* mult = nullptr;
         TetrisConfig tetrisConfigUI;
+        GameConfig gameConfigUI;
 
         bool showMenu = true;
         bool LANClicked = true;

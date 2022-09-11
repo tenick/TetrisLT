@@ -89,6 +89,12 @@ namespace UI {
         ImGui::Text("Configure - Tetris");
         ImGui::PopFont();
 
+
+        ImGui::NewLine();
+        ImGui::PushFont(Resources::fontB32);
+        ImGui::Text("Profile");
+        ImGui::PopFont();
+
         ImGui::InputText("##newSettingsNameInput", this->newSettingsBuffer, 100);
         ImGui::SameLine();
         ImGui::Button("New");
@@ -133,16 +139,21 @@ namespace UI {
         if (ImGui::IsItemClicked())
             this->Rename();
 
-
-        ImGui::Button("Reset to Defaults");
-        if (ImGui::IsItemClicked()) this->replacementSetting = TetrisSettingsFileHandler();
-
-
-        if (ImGui::BeginTable("table1", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+        if (ImGui::BeginTable("table0", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
         {
-
             ImGui::TableNextColumn(); ImGui::Text("Name");
             ImGui::TableNextColumn(); if (ImGui::InputText("##1", this->playerNameBuffer, 100)) this->replacementSetting.PlayerName = this->playerNameBuffer;
+            ImGui::EndTable();
+        }
+
+        ImGui::NewLine();
+        ImGui::PushFont(Resources::fontB32);
+        ImGui::Text("Handling");
+        ImGui::PopFont();
+
+        
+        if (ImGui::BeginTable("table1", 2, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
+        {
             ImGui::TableNextColumn(); ImGui::Text("DAS (ms)");
             ImGui::TableNextColumn(); ImGui::InputInt("##2", &this->replacementSetting.DAS, 1, 100);
             ImGui::TableNextColumn(); ImGui::Text("ARR (ms)");
@@ -168,6 +179,11 @@ namespace UI {
 
             ImGui::EndTable();
         }
+
+        ImGui::NewLine();
+        ImGui::PushFont(Resources::fontB32);
+        ImGui::Text("Controls");
+        ImGui::PopFont();
 
         if (ImGui::BeginTable("table2", 3, ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg))
         {
@@ -206,6 +222,10 @@ namespace UI {
 
             ImGui::EndTable();
         }
+
+
+        ImGui::Button("Reset to Defaults");
+        if (ImGui::IsItemClicked()) this->replacementSetting = TetrisSettingsFileHandler();
 
 
         ImGui::Button("back");

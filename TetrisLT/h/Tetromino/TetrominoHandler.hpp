@@ -1,6 +1,7 @@
 #ifndef TETROMINO_HANDLER_H
 #define TETROMINO_HANDLER_H
 
+#include "../TetrisSettingsFileHandler.hpp"
 #include "../Randomizer/RandomizerBase.hpp"
 #include "../Randomizer/BagOf7.hpp"
 #include "../RotationSystem/SRS.hpp"
@@ -18,7 +19,8 @@ using namespace RotationSystem;
 namespace Tetromino {
 	class TetrominoHandler {
 	public:
-		TetrominoHandler(std::vector<std::vector<TetrominoEnum>>& boardState,
+		TetrominoHandler(const TetrisSettingsFileHandler& tetrisSettings,
+						 std::vector<std::vector<TetrominoEnum>>& boardState,
 						 RandomizerBase* randomizer = new BagOf7(),
 						 RotationSystemBase* rotationSystemBase = new SRS());
 
@@ -48,41 +50,43 @@ namespace Tetromino {
 		// gameplay stats
 		TetrisStats tetrisStats;
 
+		// settings
+		const TetrisSettingsFileHandler& TetrisSettings;
+		
 		// playfield
 		std::vector<std::vector<TetrominoEnum>>& BoardState;
-		const int BoardHeight;
-		const int BoardWidth;
+		int BoardHeight = BoardState.size();
+		int BoardWidth = BoardState[0].size();
+
+		// randomizer
+		RandomizerBase* randomizer;
 		
 		// rotation system
 		RotationSystemBase* rotationSystem;
 
-		// randomizer
-		RandomizerBase* randomizer;
-
 		TetrominoBase* currentTetromino = nullptr;
 		TetrominoEnum holdTetromino = _;
 
-		// settings
-		int DAS = 120; // Delayed Auto Shift (ms)
-		int ARR = 0;  // Auto Repeat Rate (ms)
-		int SDS = 10;  // Soft Drop Speed (ms)
-		int Gravity = 500; // Automatic dropping speed (ms)
-		int LockDelay = 500; // Delay before locking tetromino in place (ms)
-		int LockDelayResetLimit = 15; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
-		int DelayAfterPieceLock = 100; // ms delay on piece lock (to prevent accidental hard drops)
-		bool isGhostEnabled = true;
 
-		SDL_Scancode MoveLeft = SDL_SCANCODE_LEFT;
-		SDL_Scancode MoveRight = SDL_SCANCODE_RIGHT;
-		SDL_Scancode SoftDrop = SDL_SCANCODE_DOWN;
-		SDL_Scancode HardDrop = SDL_SCANCODE_SPACE;
-		SDL_Scancode HoldTetrominoKey = SDL_SCANCODE_LSHIFT;
-		SDL_Scancode RotateCW = SDL_SCANCODE_F;
-		SDL_Scancode RotateCCW = SDL_SCANCODE_S;
-		SDL_Scancode Rotate180 = SDL_SCANCODE_D;
+		const int& DAS = TetrisSettings.DAS; // Delayed Auto Shift (ms)
+		const int& ARR = TetrisSettings.ARR;  // Auto Repeat Rate (ms)
+		const int& SDS = TetrisSettings.SDS;  // Soft Drop Speed (ms)
+		const int& Gravity = TetrisSettings.Gravity; // Automatic dropping speed (ms)
+		const int& LockDelay = TetrisSettings.LockDelay; // Delay before locking tetromino in place (ms)
+		const int& LockDelayResetLimit = TetrisSettings.LockDelayResetLimit; // Delay resets whenever piece is moved/rotated, after n resets it will automatically lock
+		const int& DelayAfterPieceLock = TetrisSettings.DelayAfterPieceLock; // ms delay on piece lock (to prevent accidental hard drops)
+		const bool& isGhostEnabled = TetrisSettings.EnableGhostPiece;
+
+		const SDL_Scancode& MoveLeft = TetrisSettings.MoveLeft;
+		const SDL_Scancode& MoveRight = TetrisSettings.MoveRight;
+		const SDL_Scancode& SoftDrop = TetrisSettings.SoftDrop;
+		const SDL_Scancode& HardDrop = TetrisSettings.HardDrop;
+		const SDL_Scancode& HoldTetrominoKey = TetrisSettings.HoldTetrominoKey;
+		const SDL_Scancode& RotateCW = TetrisSettings.RotateCW;
+		const SDL_Scancode& RotateCCW = TetrisSettings.RotateCCW;
+		const SDL_Scancode& Rotate180 = TetrisSettings.Rotate180;
 
 		// states
-
 		bool onHarddrop = false;
 
 		bool isDelayingAfterPieceLock = false;

@@ -8,19 +8,19 @@
 #include <sstream>
 #include <chrono>
 
-Tetris::Tetris(SDL_Window*& windowContext, int rows, int columns, int vanishZoneHeight) :
+Tetris::Tetris(SDL_Window*& windowContext) :
 	windowContext(windowContext),
-	renderContext(SDL_GetRenderer(windowContext)),
-	ROWS(rows + vanishZoneHeight),
-	COLUMNS(columns),
-	VANISHZONEHEIGHT(vanishZoneHeight),
-	BoardState(std::vector<std::vector<TetrominoEnum>>(this->ROWS, std::vector<TetrominoEnum>(this->COLUMNS, _))),
-	tetrominoHandler(new TetrominoHandler(BoardState))
+	renderContext(SDL_GetRenderer(windowContext))
 {
 	MainFont = TTF_OpenFont("fonts/Silkscreen-Regular.ttf", 28);
 	if (MainFont == NULL) {
 		std::cout << "error: " << TTF_GetError() << '\n';
 	}
+
+	// initialize
+	this->BoardState = std::vector<std::vector<TetrominoEnum>>(this->ROWS + this->VANISHZONEHEIGHT, std::vector<TetrominoEnum>(this->COLUMNS, _));
+	tetrominoHandler = new TetrominoHandler(this->TetrisSettings, this->BoardState);
+
 }
 const TetrisStats& Tetris::GetStats() const {
 	return this->tetrominoHandler->CurrentStats();
@@ -84,18 +84,18 @@ void Tetris::OnFinish() {
 }
 
 void Tetris::Reset() {
-	this->tetrominoHandler->Reset();
-	
 	// clear renderer
-	SDL_SetRenderDrawColor(this->renderContext, 0x00, 0x00, 0x00, 0xFF);
+	SDL_SetRenderDrawColor(this->renderContext, 0x20, 0x20, 0x20, 0xFF);
 	SDL_RenderClear(this->renderContext);
 
-	// clear board
-	for (int r = 0; r < this->ROWS; r++) {
-		for (int c = 0; c < this->COLUMNS; c++) {
-			this->BoardState[r][c] = _;
-		}
-	}
+	// get new settings (user might've chosen new settings)
+	this->TetrisSettings = Configuration::CurrentSelectedTetrisSetting();
+
+	// reinitialize board
+	this->BoardState = std::vector<std::vector<TetrominoEnum>>(this->ROWS + this->VANISHZONEHEIGHT, std::vector<TetrominoEnum>(this->COLUMNS, _));
+
+
+	this->tetrominoHandler->Reset();
 
 	this->isFinished = false;
 }
@@ -120,6 +120,10 @@ void Tetris::Update() {
 }
 
 void Tetris::Render() {
+	// calculate actual size
+	int actual_rows = this->ROWS + this->VANISHZONEHEIGHT;
+	int actual_columns = this->COLUMNS;
+
 	// draw playfield viewport bg
 	SDL_RenderSetViewport(this->renderContext, &this->playfieldViewport);
 	//SDL_SetRenderDrawColor(this->renderContext, 0x22, 0x22, 0x22, 0xff);
@@ -139,23 +143,23 @@ void Tetris::Render() {
 	SDL_FRect boardXYPadding{};
 	SDL_FRect cellRect{};
 
-	cellRect.w = boardBG.w / this->COLUMNS;
+	cellRect.w = boardBG.w / actual_columns;
 	cellRect.h = cellRect.w;
 
-	boardXYPadding.y = fmax(0, (boardBG.h - cellRect.h * this->ROWS) / 2);
+	boardXYPadding.y = fmax(0, (boardBG.h - cellRect.h * actual_rows) / 2);
 
 
 	// check if drawing board will overlap screen, adjust cell rect width and height
-	if (cellRect.h * this->ROWS > boardBG.h) {
-		cellRect.h = boardBG.h / this->ROWS;
+	if (cellRect.h * actual_rows > boardBG.h) {
+		cellRect.h = boardBG.h / actual_rows;
 		cellRect.w = cellRect.h;
 
-		boardXYPadding.x = (boardBG.w - cellRect.w * this->COLUMNS) / 2;
+		boardXYPadding.x = (boardBG.w - cellRect.w * actual_columns) / 2;
 	}
 
 		
-	for (int r = 0; r < this->ROWS; r++) {
-		for (int c = 0; c < this->COLUMNS; c++) {
+	for (int r = 0; r < actual_rows; r++) {
+		for (int c = 0; c < actual_columns; c++) {
 			TetrominoEnum currCell = this->BoardState[r][c];
 			if (currCell == _)
 				SDL_SetRenderDrawColor(this->renderContext, 0x88, 0x88, 0x88, 0xFF);
@@ -177,7 +181,7 @@ void Tetris::Render() {
 		// draw over board to represent vanish zone (almost black bg)
 	SDL_SetRenderDrawColor(this->renderContext, 20, 20, 20, 0xFF);
 	for (int r = 0; r < this->VANISHZONEHEIGHT; r++) {
-		for (int c = 0; c < this->COLUMNS; c++) {
+		for (int c = 0; c < actual_columns; c++) {
 			TetrominoEnum currCell = this->BoardState[r][c];
 			if (currCell == _){
 				cellRect.x = boardBG.x + boardXYPadding.x + c * cellRect.w;
@@ -189,13 +193,13 @@ void Tetris::Render() {
 	
 	// draw board lines
 	/*SDL_SetRenderDrawColor(this->renderContext, 0x88, 0x88, 0x88, 0xFF);
-	float cellHeight = (float)this->boardViewport.h / this->ROWS;
-	float cellWidth = (float)this->boardViewport.w / this->COLUMNS;
-	for (int i = 1; i < this->ROWS; i++) {
+	float cellHeight = (float)this->boardViewport.h / actual_rows;
+	float cellWidth = (float)this->boardViewport.w / actual_columns;
+	for (int i = 1; i < actual_rows; i++) {
 		float currY = i * cellHeight;
 		SDL_RenderDrawLineF(this->renderContext, 0, currY, this->boardViewport.w, currY);
 	}
-	for (int i = 1; i < this->COLUMNS; i++) {
+	for (int i = 1; i < actual_columns; i++) {
 		float currX = i * cellWidth;
 		SDL_RenderDrawLineF(this->renderContext, currX, 0, currX, this->boardViewport.h);
 	}*/

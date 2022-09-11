@@ -5,6 +5,13 @@
 #include <filesystem>
 #include <vector>
 
+bool GameStatesFileHandler::IsKeyUsed(SDL_Scancode key) {
+	bool keyIsUsed = false;
+	keyIsUsed = this->QuitKey == key ||
+				this->ResetKey == key;
+	return keyIsUsed;
+}
+
 bool GameStatesFileHandler::LoadFromFile() {
 	std::string fileName = "game.ini";
 
@@ -39,10 +46,25 @@ bool GameStatesFileHandler::LoadFromFile() {
 				// result[0] = member name; result[1] = member value
 				std::string memberName = result[0];
 				std::string strMemberValue = result[1];
-				if (memberName == "SFXVolume")
-					this->SFXVolume = std::stoi(strMemberValue);
-				else if (memberName == "SelectedTetrisSettingName")
+				if (memberName == "SelectedTetrisSettingName")
 					this->SelectedTetrisSettingName = strMemberValue;
+				else if (memberName == "SFXVolume")
+					this->SFXVolume = std::stoi(strMemberValue);
+				else if (memberName == "QuitKey")
+					this->QuitKey = (SDL_Scancode)std::stoi(strMemberValue);
+				else if (memberName == "ResetKey")
+					this->ResetKey = (SDL_Scancode)std::stoi(strMemberValue);
+				else if (memberName == "StartCountdownTicks")
+					this->StartCountdownTicks = std::stoi(strMemberValue);
+				else if (memberName == "StartCountdownTickDurationMS")
+					this->StartCountdownTickDurationMS = std::stoi(strMemberValue);
+				else if (memberName == "ResetCountdownTicks")
+					this->ResetCountdownTicks = std::stoi(strMemberValue);
+				else if (memberName == "ResetCountdownTickDurationMS")
+					this->ResetCountdownTickDurationMS = std::stoi(strMemberValue);
+				else if (memberName == "GameFinishDelayMS")
+					this->GameFinishDelayMS = std::stoi(strMemberValue);
+				
 			}
 			file.close();
 		}
@@ -64,5 +86,13 @@ void GameStatesFileHandler::WriteToFile() {
 	newGameSetting.open(fileName);
 	newGameSetting << "SFXVolume=" << SFXVolume << '\n';
 	newGameSetting << "SelectedTetrisSettingName=" << SelectedTetrisSettingName << '\n';
+	newGameSetting << "QuitKey=" << QuitKey << '\n';
+	newGameSetting << "ResetKey=" << ResetKey << '\n';
+	newGameSetting << "StartCountdownTicks=" << StartCountdownTicks << '\n';
+	newGameSetting << "StartCountdownTickDurationMS=" << StartCountdownTickDurationMS << '\n';
+	newGameSetting << "ResetCountdownTicks=" << ResetCountdownTicks << '\n';
+	newGameSetting << "ResetCountdownTickDurationMS=" << ResetCountdownTickDurationMS << '\n';
+	newGameSetting << "GameFinishDelayMS=" << GameFinishDelayMS << '\n';
+
 	newGameSetting.close();
 }

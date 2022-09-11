@@ -125,7 +125,7 @@ Game::Game()
     }
 
     // load last game states
-    Configuration::LastGameStates = new GameStatesFileHandler;
+    Configuration::LastGameStates = new GameStatesFileHandler();
     bool gameStateLoadingSuccessful = Configuration::LastGameStates->LoadFromFile();
     if (!gameStateLoadingSuccessful) {
         // default settings
@@ -147,6 +147,9 @@ Game::Game()
             Configuration::LastGameStates->WriteToFile();
         }
     }
+
+    // apply configurations (if applicable)
+    Mix_MasterVolume((int)((float)MIX_MAX_VOLUME * ((float)Configuration::LastGameStates->SFXVolume / 100.0f)));
 
 
     // Setup Dear ImGui style

@@ -163,6 +163,7 @@
     <ClCompile Include="src\TetrisSettingsFileHandler.cpp" />
     <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\UI\Delay.cpp" />
+    <ClCompile Include="src\UI\GameConfig.cpp" />
     <ClCompile Include="src\UI\GameOver.cpp" />
     <ClCompile Include="src\UI\Menu.cpp" />
     <ClCompile Include="src\UI\Resources.cpp" />
@@ -219,6 +220,7 @@
     <ClInclude Include="h\Tetromino\Z.hpp" />
     <ClInclude Include="h\Timer.hpp" />
     <ClInclude Include="h\UI\Delay.hpp" />
+    <ClInclude Include="h\UI\GameConfig.hpp" />
     <ClInclude Include="h\UI\GameOver.hpp" />
     <ClInclude Include="h\GameStatesFileHandler.hpp" />
     <ClInclude Include="h\UI\Menu.hpp" />

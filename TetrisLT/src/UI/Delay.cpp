@@ -41,6 +41,11 @@ namespace UI {
 			int ticksPassed = currTick / this->tickDurationInMS;
 			int currCountdown = this->ticks - ticksPassed;
 
+			if (currCountdown == 0) { // done counting down
+				this->Hide();
+				return;
+			}
+
 			// play countdown tick sfx
 			if (this->currCountdownState != currCountdown) {
 				Mix_PlayChannel(0, Resources::countdownTickSfx, 0);
