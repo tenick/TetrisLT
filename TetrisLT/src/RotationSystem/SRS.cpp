@@ -16,7 +16,6 @@ namespace RotationSystem {
 		
 		std::vector<std::pair<int, int>> tests;
 		auto& wallKickData = TetrominoByWallKickData.at(tetromino->GetTetrominoEnumEquivalent());
-		std::cout << initialRotationStateIndex << ">>" << resultingRotationStateIndex << " tests: " << wallKickData.size() << '\n';
 		
 		if (wallKickData.size() != 0)
 			tests = wallKickData[initialRotationStateIndex][resultingRotationStateIndex];
