@@ -16,14 +16,21 @@
 
 #include <iostream>
 #include <time.h>
+#include <random>
 
 namespace Tetromino {
 	TetrominoHandler::TetrominoHandler(const TetrisSettingsFileHandler& tetrisSettings,
 									   std::vector<std::vector<TetrominoEnum>>& boardState,
+									   std::queue<int>& garbageQueue,
+									   bool& isFinished,
+									   Tetris* targetOpponent,
 									   Randomizer::RandomizerBase* randomizer,
 									   RotationSystem::RotationSystemBase* rotationSystemBase)
 		:	TetrisSettings(tetrisSettings),
 		    BoardState(boardState),
+			garbageQueue(garbageQueue),
+			isFinished(isFinished),
+			targetOpponent(targetOpponent),
 			randomizer(randomizer),
 			rotationSystem(rotationSystemBase),
 			currentTetromino(EnumToTetromino(randomizer->Next()))
@@ -158,23 +165,118 @@ namespace Tetromino {
 			else
 				rowToAdd++;
 		}
-
-		// play line clear SFX
-		if (rowToAdd != 0)
-			Mix_PlayChannel(1, Resources::lineClearSfx, 0);
-
 		this->BoardState = newBoard;
 
+
+
+		// check if there was a line clear
+		if (rowToAdd > 0) {
+			// play line clear SFX
+			Mix_PlayChannel(1, Resources::lineClearSfx, 0);
+
+			// check if we have an opponent, send lines to it
+			if (this->targetOpponent != NULL) {
+
+				// calculate how many lines to send to opponent
+				//...
+
+				this->targetOpponent->ReceiveGarbage(rowToAdd);
+			}
+		}
+		else { // if there's no line clear, garbage will be applied
+			// apply the queued garbages to board (if there are any)
+			if (!this->garbageQueue.empty()) {
+				int garbageAmount = this->garbageQueue.front();
+				this->garbageQueue.pop();
+
+				// if garbage is higher than board height then gameover
+				if (garbageAmount > this->BoardHeight) {
+					this->OnFinish();
+					return;
+				}
+
+				// get random open spot for the garbage line
+				int seed = time(NULL);
+				std::minstd_rand rand(seed);
+				int openSpotIndex = rand() % this->BoardWidth;
+
+				// create new clean board with just the garbage at the bottom
+				std::vector<std::vector<TetrominoEnum>> newBoard(this->BoardHeight, std::vector<TetrominoEnum>(this->BoardWidth, _));
+				for (int i = 0; i < garbageAmount; i++) {
+					for (int c = 0; c < this->BoardWidth; c++) {
+						if (c != openSpotIndex)
+							newBoard[this->BoardHeight - i - 1][c] = G_;
+					}
+				}
+
+				// find highest row with tetromino piece present
+				bool found = false;
+				int highestRowIndexWithPiece = 0;
+				for (int r = 0; r < this->BoardHeight; r++) {
+					const std::vector<TetrominoEnum>& column = this->BoardState[r];
+					for (int c = 0; c < this->BoardWidth; c++) {
+						if (column[c] != _) {
+							found = true;
+							highestRowIndexWithPiece = r;
+							break;
+						}
+					}
+					if (found)
+						break;
+				}
+
+				// calculate how much of the current board we need to append to the new board
+				int amountOfTheStackToAppend = this->BoardHeight - highestRowIndexWithPiece;
+
+				// check if we can append the amount calculated, if not, gameover
+				if (amountOfTheStackToAppend + garbageAmount > this->BoardHeight) {
+					this->OnFinish();
+					return;
+				}
+
+				// add the current stack above the garbage
+				for (int r = this->BoardHeight - 1; r >= highestRowIndexWithPiece; r--) {
+					for (int c = 0; c < this->BoardWidth; c++) {
+						TetrominoEnum currCell = this->BoardState[r][c];
+
+						int rowToInsert = r - garbageAmount;
+						newBoard[rowToInsert][c] = currCell;
+					}
+				}
+
+				this->BoardState = newBoard;
+			}
+		}
+		
+
+
+		// get next piece
 		this->Next();
+
+		// update states
 		this->currentHold = 0;
 		this->highestRowOffsetReached = 0;
 
+		// update stats
 		this->tetrisStats.PiecesLocked++;
 		this->tetrisStats.LinesCleared += rowToAdd;
 
 		// start delay after locking piece (preventing accidental hard drops)
 		this->isDelayingAfterPieceLock = true;
 		this->delayAfterPieceLockStartTime = SDL_GetTicks64();
+	}
+
+	void TetrominoHandler::OnFinish() {
+		this->isFinished = true;
+
+		// replace current pieces in board with garbage (to indicate it's finished)
+		for (int r = 0; r < this->BoardState.size(); r++) {
+			for (int c = 0; c < this->BoardState[r].size(); c++) {
+				TetrominoEnum tetrEnum = this->BoardState[r][c];
+				if (tetrEnum != _)
+					this->BoardState[r][c] = G_;
+			}
+		}
 	}
 
 	void TetrominoHandler::ResetLock() {

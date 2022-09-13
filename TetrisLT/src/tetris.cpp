@@ -18,8 +18,10 @@ Tetris::Tetris(SDL_Window*& windowContext) :
 	}
 
 	// initialize
+	this->targetOpponent = this;
 	this->BoardState = std::vector<std::vector<TetrominoEnum>>(this->ROWS + this->VANISHZONEHEIGHT, std::vector<TetrominoEnum>(this->COLUMNS, _));
-	tetrominoHandler = new TetrominoHandler(this->TetrisSettings, this->BoardState);
+	
+	this->tetrominoHandler = new TetrominoHandler(this->TetrisSettings, this->BoardState, this->GarbageQueue, this->isFinished, this->targetOpponent);
 
 }
 const TetrisStats& Tetris::GetStats() const {
@@ -97,6 +99,12 @@ void Tetris::Reset() {
 	this->tetrominoHandler->Reset();
 
 	this->isFinished = false;
+
+	this->GarbageQueue = std::queue<int>();
+}
+
+void Tetris::ReceiveGarbage(int garbageAmount) {
+	this->GarbageQueue.push(garbageAmount);
 }
 
 void Tetris::Update() {
@@ -209,56 +217,77 @@ void Tetris::Render() {
 	int currentRowOffset = currentTetromino->RowOffset;
 	auto& currentTetrominoState = currentTetromino->GetCurrentRotationState();
 
-
 	uint8_t r, g, b, a;
-	Tetromino::EnumToRGBA(currentTetromino->GetTetrominoEnumEquivalent(), r, g, b, a);
-	SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
-	for (int r = 0; r < currentTetrominoState.size(); r++) {
-		for (int c = 0; c < currentTetrominoState[0].size(); c++) {
-			TetrominoEnum currCell = currentTetrominoState[r][c];
 
-			if (currCell != _) {
-				cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
-				cellRect.y = boardBG.y + boardXYPadding.y + (currentRowOffset + r) * cellRect.h;
-
-				if (Resources::tetrominoesTexture != NULL)
-					Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
-				else
-					SDL_RenderFillRectF(this->renderContext, &cellRect);
-			}
-		}
-	}
-
-
-	// draw current tetromino ghost piece
-	if (this->isGhostPieceEnabled) {
-		SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_BLEND);
-		SDL_SetRenderDrawColor(this->renderContext, r * .7, g * .7, b * .7, 0xBB);
-		int resultingRowOffset = currentRowOffset;
-		while (CanMove(this->BoardState, currentTetrominoState, currentColumnOffset, resultingRowOffset + 1)) {
-			resultingRowOffset++;
-		}
+	if (!this->isFinished) { // dont draw tetromino and ghost piece when already finished
+		Tetromino::EnumToRGBA(currentTetromino->GetTetrominoEnumEquivalent(), r, g, b, a);
+		SDL_SetRenderDrawColor(this->renderContext, r, g, b, a);
 		for (int r = 0; r < currentTetrominoState.size(); r++) {
 			for (int c = 0; c < currentTetrominoState[0].size(); c++) {
 				TetrominoEnum currCell = currentTetrominoState[r][c];
 
 				if (currCell != _) {
 					cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
-					cellRect.y = boardBG.y + boardXYPadding.y + (resultingRowOffset + r) * cellRect.h;
+					cellRect.y = boardBG.y + boardXYPadding.y + (currentRowOffset + r) * cellRect.h;
 
-					if (Resources::tetrominoesTexture != NULL) {
-						SDL_SetTextureBlendMode(Resources::tetrominoesTexture, SDL_BLENDMODE_BLEND);
-						SDL_SetTextureAlphaMod(Resources::tetrominoesTexture, 100);
+					if (Resources::tetrominoesTexture != NULL)
 						Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
-						SDL_SetTextureBlendMode(Resources::tetrominoesTexture, SDL_BLENDMODE_NONE);
-					}
 					else
 						SDL_RenderFillRectF(this->renderContext, &cellRect);
 				}
 			}
 		}
-		SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_NONE);
+
+		// draw current tetromino ghost piece
+		if (this->isGhostPieceEnabled) {
+			SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_BLEND);
+			SDL_SetRenderDrawColor(this->renderContext, r * .7, g * .7, b * .7, 0xBB);
+			int resultingRowOffset = currentRowOffset;
+			while (CanMove(this->BoardState, currentTetrominoState, currentColumnOffset, resultingRowOffset + 1)) {
+				resultingRowOffset++;
+			}
+			for (int r = 0; r < currentTetrominoState.size(); r++) {
+				for (int c = 0; c < currentTetrominoState[0].size(); c++) {
+					TetrominoEnum currCell = currentTetrominoState[r][c];
+
+					if (currCell != _) {
+						cellRect.x = boardBG.x + boardXYPadding.x + (currentColumnOffset + c) * cellRect.w;
+						cellRect.y = boardBG.y + boardXYPadding.y + (resultingRowOffset + r) * cellRect.h;
+
+						if (Resources::tetrominoesTexture != NULL) {
+							SDL_SetTextureBlendMode(Resources::tetrominoesTexture, SDL_BLENDMODE_BLEND);
+							SDL_SetTextureAlphaMod(Resources::tetrominoesTexture, 100);
+							Tetromino::RenderTexture(this->renderContext, Resources::tetrominoesTexture, &cellRect, currCell);
+							SDL_SetTextureBlendMode(Resources::tetrominoesTexture, SDL_BLENDMODE_NONE);
+						}
+						else
+							SDL_RenderFillRectF(this->renderContext, &cellRect);
+					}
+				}
+			}
+			SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_NONE);
+		}
 	}
+	
+
+
+	// draw the garbage received indicator
+	int totalGarbage = 0;
+	std::queue<int> tmp_q = this->GarbageQueue;
+	while (!tmp_q.empty())
+	{
+		totalGarbage += tmp_q.front();
+		tmp_q.pop();
+	}
+
+	SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_BLEND);
+	SDL_SetRenderDrawColor(this->renderContext, 255, 80, 80, 180);
+	cellRect.x = boardBG.x + boardXYPadding.x - cellRect.w / 2;
+	for (int r = 0; r < totalGarbage; r++) {
+		cellRect.y = this->playfieldViewport.h - (r + 1) * cellRect.h;
+		SDL_RenderFillRectF(this->renderContext, &cellRect);
+	}
+	SDL_SetRenderDrawBlendMode(this->renderContext, SDL_BLENDMODE_NONE);
 
 
 	// draw hold piece area

@@ -1,6 +1,10 @@
 #ifndef TETRIS_H
 #define TETRIS_H
 
+namespace Tetromino {
+	class TetrominoHandler;
+}
+
 #include "TetrisSettingsFileHandler.hpp"
 #include "../h/Configuration.hpp"
 #include "Tetromino/TetrominoEnum.hpp"
@@ -10,6 +14,8 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <vector>
+#include <queue>
+
 
 class Tetris {
 public:
@@ -21,6 +27,7 @@ public:
 	void OnFinish();
 	bool IsFinished();
 	void Render();
+	void ReceiveGarbage(int garbageAmount);
 	void SetViewport(SDL_Rect newViewport);
 	void SetSeed(int newSeed);
 	const SDL_Rect& Viewport();
@@ -51,6 +58,14 @@ private:
 	Tetromino::TetrominoHandler* tetrominoHandler;
 
 	SDL_Rect playfieldViewport;
+
+	// multiplayer stuff below here
+	// opponent
+	Tetris* targetOpponent = NULL;
+
+	// garbage queue
+	std::queue<int> GarbageQueue;
+
 };
 
 #endif

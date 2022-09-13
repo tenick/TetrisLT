@@ -1,6 +1,9 @@
 #ifndef TETROMINO_HANDLER_H
 #define TETROMINO_HANDLER_H
 
+class Tetris ;
+
+#include "../tetris.hpp"
 #include "../TetrisSettingsFileHandler.hpp"
 #include "../Randomizer/RandomizerBase.hpp"
 #include "../Randomizer/BagOf7.hpp"
@@ -13,6 +16,8 @@
 
 #include <SDL.h>
 
+#include <queue>
+
 using namespace Randomizer;
 using namespace RotationSystem;
 
@@ -21,6 +26,9 @@ namespace Tetromino {
 	public:
 		TetrominoHandler(const TetrisSettingsFileHandler& tetrisSettings,
 						 std::vector<std::vector<TetrominoEnum>>& boardState,
+						 std::queue<int>& garbageQueue,
+						 bool& isFinished,
+						 Tetris* targetOpponent = NULL,
 						 RandomizerBase* randomizer = new BagOf7(),
 						 RotationSystemBase* rotationSystemBase = new SRS());
 
@@ -32,6 +40,7 @@ namespace Tetromino {
 		void Next();
 		void Reset();
 		void Update();
+		void OnFinish();
 		void SetSeed(int newSeed);
 		const TetrisStats& CurrentStats() const;
 		TetrominoEnum GetHoldTetromino();
@@ -42,6 +51,15 @@ namespace Tetromino {
 		const std::array<TetrominoEnum, 5> PeekNext5Tetrominos();
 		~TetrominoHandler();
 	private:
+		// opponent
+		Tetris* targetOpponent = NULL;
+
+		// parent tetris garbage queue
+		std::queue<int>& garbageQueue;
+
+		// tetris state
+		bool& isFinished;
+
 		// helpers
 		void ResetLock();
 		void ResetLockDelay();
